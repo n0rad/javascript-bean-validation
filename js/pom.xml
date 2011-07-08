@@ -11,13 +11,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>net.awired.client303</groupId>
-	<artifactId>client303-js</artifactId>
-	<name>Client303 - js</name>
+	<groupId>net.awired.client-bean-validaton</groupId>
+	<artifactId>client-bean-validation-js</artifactId>
+	<name>Client Bean Validation - JS</name>
 
 	<parent>
-		<groupId>net.awired.client303</groupId>
-		<artifactId>client303</artifactId>
+		<groupId>net.awired.client-bean-validation</groupId>
+		<artifactId>client-bean-validation</artifactId>
 		<version>0.1-SNAPSHOT</version>
 		<relativePath>../</relativePath>
 	</parent>

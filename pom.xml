@@ -20,12 +20,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>net.awired.client303</groupId>
-	<artifactId>client303</artifactId>
+	<groupId>net.awired.client-bean-validation</groupId>
+	<artifactId>client-bean-validation</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>Client303</name>
-	<description>JSR303 clients implementations</description>
+	<name>Client Bean Validation</name>
+	<description>JSR303 clients implementation / tools</description>
 
 	<parent>
 		<groupId>net.awired.parent.parent-java</groupId>
@@ -35,7 +35,7 @@
 
 	<modules>
 		<module>js</module>
-		<module>xsd</module>
+<!--		<module>xsd</module>-->
 	</modules>
 
 	<licenses>
@@ -49,7 +49,7 @@
 
 	<issueManagement>
 		<system>github</system>
-		<url>https://github.com/awired/client303/issues</url>
+		<url>https://github.com/awired/client-bean-validation/issues</url>
 	</issueManagement>
 	<developers>
 		<developer>
@@ -65,9 +65,9 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:git://github.com/awired/client303.git</connection>
-		<developerConnection>scm:git:git@github.com:awired/client303.git</developerConnection>
-		<url>http://github.com/awired/client303</url>
+		<connection>scm:git:git://github.com/awired/client-bean-validation.git</connection>
+		<developerConnection>scm:git:git@github.com:awired/client-bean-validation.git</developerConnection>
+		<url>http://github.com/awired/client-bean-validation</url>
 	</scm>
 
 	<build>
@@ -129,7 +129,7 @@
 		<site>
 			<id>awired-web</id>
 			<name>awired web deployment</name>
-			<url>dav:http://projs.awired.net/client303</url>
+			<url>dav:http://projs.awired.net/client-bean-validation</url>
 		</site>
 	</distributionManagement>
 
