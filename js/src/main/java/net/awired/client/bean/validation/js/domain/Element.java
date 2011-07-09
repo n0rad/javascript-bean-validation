@@ -1,4 +1,4 @@
-package net.awired.client303.js.domain;
+package net.awired.client.bean.validation.js.domain;
 
 import java.util.ArrayList;
 import java.util.List;
