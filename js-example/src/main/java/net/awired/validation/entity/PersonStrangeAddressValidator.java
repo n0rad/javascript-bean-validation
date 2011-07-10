@@ -1,12 +1,14 @@
-package net.awired.validation;
+package net.awired.validation.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import net.awired.validation.MyNotEmpty;
 
-public class Person {
+public class PersonStrangeAddressValidator {
 
     @NotNull(message = "firstname can not be null")
     private String firstname;
@@ -22,10 +24,12 @@ public class Person {
     @Size(min = 1)
     private List<Address> addresses = new ArrayList<Address>();
 
+    @Pattern(regexp = "-getAdddresses")
     public List<Address> getAddresses() {
         return addresses;
     }
 
+    @Pattern(regexp = "-setAdddresses")
     public void setAddresses(List<Address> addresses) {
         this.addresses = addresses;
     }

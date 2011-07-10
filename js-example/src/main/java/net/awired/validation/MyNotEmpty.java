@@ -43,7 +43,10 @@ public @interface MyNotEmpty {
 
         @Override
         public boolean isValid(String value, ConstraintValidatorContext context) {
-            return true;
+            if (value == null) {
+                return true;
+            }
+            return value.trim().length() > 0;
         }
     }
 }

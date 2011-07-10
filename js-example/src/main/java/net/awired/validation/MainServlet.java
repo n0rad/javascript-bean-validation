@@ -12,6 +12,9 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import net.awired.client.bean.validation.js.service.ValidationService;
+import net.awired.validation.entity.Address;
+import net.awired.validation.entity.Person;
+import net.awired.validation.entity.Work;
 import org.codehaus.jackson.map.ObjectMapper;
 
 public class MainServlet extends HttpServlet {

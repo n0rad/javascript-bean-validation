@@ -1,15 +1,13 @@
-package net.awired.validation;
+package net.awired.validation.entity;
 
-import javax.validation.constraints.NotNull;
+import net.awired.validation.MyNotEmpty;
 
 public class Address {
 
-    @NotNull
+    @MyNotEmpty
     private String street;
-    @NotNull
+    @MyNotEmpty
     private String city;
-
-    @NotNull
     @MyNotEmpty
     private String code;
 

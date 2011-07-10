@@ -49,7 +49,7 @@ public class ValidationService {
                         Field field = clazz.getDeclaredField(propertyName);
                         ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
                         Class<?> elementListClass = (Class<?>) stringListType.getActualTypeArguments()[0];
-                        element.setType("list");
+                        element.setType("array");
                         fillValidationObject(elementListClass, element);
                     } catch (SecurityException e1) {
                         // TODO Auto-generated catch block
@@ -64,7 +64,6 @@ public class ValidationService {
                 } else if (elementClass != String.class) {
                     fillValidationObject(elementClass, element);
                 }
-                System.out.println();
             }
         }
     }

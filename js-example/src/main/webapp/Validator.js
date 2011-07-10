@@ -39,7 +39,11 @@ Validator = function() {
 				
 			},
 			'javax.validation.constraints.Size' : function(obj, attributes) {
-
+				if ( obj == null ) {
+					return true;
+				}
+				var length = obj.length;
+				return length >= attributes.min && length <= attributes.max;
 			}
 	};
 	
@@ -49,45 +53,25 @@ Validator = function() {
 
 	this.validate = function(bean, beanDesc) {
 		var violation = [];
-		$this._validateRec(violation, bean, beanDesc, bean, bean, "");
+		$this._validateRec(violation, bean, beanDesc, bean, bean);
 		return violation;
 	};
 
 	this._validateRec = function(violation, bean, beanDesc, rootBean, previousBean, path) {
-		$this._validateConstraints(violation, bean, beanDesc, rootBean, previousBean, path);
-		
 		for (var key in beanDesc.elements) {
 			var eBeanDesc = beanDesc.elements[key];
-			if (bean != undefined) {
-				if ($.isArray(bean[key])) {
-//					$this._validateConstraints(violation, bean, beanDesc, rootBean, previousBean, path);
-					for (var i = 0; i < bean[key].length; i++) {
-						var ebean = bean[key][i];
-						var epath = path;
-						if (epath) {
-							epath += '.';
-						}
-						epath += key + '[' + i + ']';
-						$this._validateRec(violation, ebean, eBeanDesc, rootBean, bean, epath);				
+			var ebean = bean ? bean[key] : undefined;
+			var epath = path ? path + '.' + key : key;
+			$this._validateConstraints(violation, ebean, eBeanDesc, rootBean, previousBean, epath);
+			if (eBeanDesc.type == 'array') {
+				if ($.isArray(ebean)) {
+					for (var i = 0; i < ebean.length; i++) {
+						var lebean = ebean[i];
+						var lepath = epath + '[' + i + ']';
+						$this._validateRec(violation, lebean, eBeanDesc, rootBean, bean, lepath);				
 					}
-				} else {
-					var ebean = bean[key];
-					var epath = path;
-					if (epath) {
-						epath += '.';
-					}
-					epath += key;
-					$this._validateRec(violation, ebean, eBeanDesc, rootBean, bean, epath);				
-
-					// TODO manage MAP
 				}
 			} else {
-				var ebean = undefined;
-				var epath = path;
-				if (epath) {
-					epath += '.';
-				}
-				epath += key;
 				$this._validateRec(violation, ebean, eBeanDesc, rootBean, bean, epath);				
 			}
 		}

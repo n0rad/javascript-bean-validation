@@ -1,4 +1,4 @@
-package net.awired.validation;
+package net.awired.validation.entity;
 
 import javax.validation.constraints.NotNull;
 

@@ -12,15 +12,29 @@
 
 	$(function() {
 		
+		var MyNotEmpty = function(obj, attributes) {
+            if (obj == undefined) {
+                return true;
+            }
+            return $.trim(obj).length > 0;
+		};
+		
 		$("form").submit(function() {
 			try {
+				$("input, textarea, select", this).removeClass('red');
+
 				var validator = new Validator();
-				var dataObject = $(this).toObject();
+				validator.registerConstraint("net.awired.validation.MyNotEmpty", MyNotEmpty);
+				var dataObject = $(this).toObject({skipEmpty : false});
 				var violations = validator.validate(dataObject, personConstraints);
 				
 				
 				var dataJson = JSON.stringify(dataObject);
-				alert("salut");
+				
+				for (var i = 0; i < violations.length; i++) {
+					$('[name="' + violations[i].propertyPath + '"]').addClass('red');
+				}
+				
 			} catch (e) {
 				alert(e);
 			} finally {
@@ -34,51 +48,60 @@
 LABEL,INPUT { /* 			display: block; */
 	
 }
+
+.red {
+	border: 1px solid red;
+}
 </style>
 </head>
 <body>
 	<form id="form">
 
-		<label>firstname</label> <input id="firstname" name="firstname">
-
-		<label>lastname</label> <input name="lastname"> <label>email</label>
-		<input name="email">
+<!-- First Name:<input type="text" name="Fname" maxlength="12" size="12"/> <br/> -->
+<!-- Last Name:<input type="text" name="Lname" maxlength="36" size="12"/> <br/> -->
+		<label>firstname</label><input name="firstname">
+		<label>lastname</label><input name="lastname">
+		<label>email</label><input name="email"><br/>
+		Male:<input type="radio" name="gender" value="Male"/>Female:<input type="radio" name="gender" value="Female"/><br/>
 
 		<fieldset>
-			<legend>addresses</legend>
+			<legend>Competences</legend>
+		
+			<label>java rating</label><input name="languageSkill[java].rating">
+			<label>js rating</label><input name="languageSkill[js].rating">
+		</fieldset>
+
+		<fieldset>
+			<legend>Addresses</legend>
 
 			<div>
-				<label>street</label><input name="addresses[0].street">
-				<label>city</label><input name="addresses[0].city">
-				<label>code</label><input name="addresses[0].code">
+				<label>street</label><input name="addresses[1].street">
+				<label>city</label><input name="addresses[1].city">
+				<label>code</label><input name="addresses[1].code">
 			</div>
 			<div>
-				<label>street</label><input name="addresses[1].street" value="">
-				<label>city</label><input name="addresses[1].city" value="Malville">
-				<label>code</label><input name="addresses[1].code" value="44260">
+				<label>street</label><input name="addresses[2].street">
+				<label>city</label><input name="addresses[2].city">
+				<label>code</label><input name="addresses[2].code">
 			</div>
 		</fieldset>
 
-First Name:<input type="text" name="Fname" maxlength="12" size="12"/> <br/>
-Last Name:<input type="text" name="Lname" maxlength="36" size="12"/> <br/>
-Gender:<br/>
-Male:<input type="radio" name="gender" value="Male"/><br/>
-Female:<input type="radio" name="gender" value="Female" checked="checked"/><br/>
-Favorite Food:<br/>
-Steak:<input type="checkbox" name="food[]" value="Steak" checked="checked"/><br/>
+
+
+Food:<br/>Steak:<input type="checkbox" name="food[]" value="Steak"/><br/>
 Pizza:<input type="checkbox" name="food[]" value="Pizza"/><br/>
-Chicken:<input type="checkbox" name="food[]" value="Chicken" checked="checked"/><br/>
-<textarea wrap="physical" cols="20" name="quote" rows="5">Enter your favorite quote!</textarea><br/>
+Chicken:<input type="checkbox" name="food[]" value="Chicken"/><br/>
+<textarea cols="20" name="quote" rows="5">Enter your favorite quote!</textarea><br/>
 Select a Level of Education:<br/>
 <select name="education">
 <option value="Jr.High">Jr.High</option>
 <option value="HighSchool">HighSchool</option>
 <option value="College">College</option></select><br/>
 Select your favorite time of day:<br/>
-<select size="3" name="TofD" multiple="multiple">
-<option value="MorningId" selected="selected">Morning</option>
+<select size="3" name="favoriteDayTime" multiple="multiple">
+<option value="MorningId">Morning</option>
 <option value="DayId">Day</option>
-<option value="NightId" selected="selected">Night</option></select>
+<option value="NightId">Night</option></select>
 
 		<input type="submit">
 	</form>
