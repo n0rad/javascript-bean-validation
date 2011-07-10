@@ -8,18 +8,21 @@
 <script type="text/javascript" src="jquery.toObject.js"></script>
 <script type="text/javascript">
 
+	personConstraints = ${contraints};
+
 	$(function() {
-		personConstraints = ${contraints};
 		
 		$("form").submit(function() {
 			try {
 				var validator = new Validator();
 				var dataObject = $(this).toObject();
-				validator.validate(dataObject, personConstraints);
+				var violations = validator.validate(dataObject, personConstraints);
 				
 				
 				var dataJson = JSON.stringify(dataObject);
 				alert("salut");
+			} catch (e) {
+				alert(e);
 			} finally {
 				return false;
 			}
@@ -45,14 +48,14 @@ LABEL,INPUT { /* 			display: block; */
 			<legend>addresses</legend>
 
 			<div>
-				<label>street</label><input name="address[0].street">
-				<label>city</label><input name="address[0].city">
-				<label>code</label><input name="address[0].code">
+				<label>street</label><input name="addresses[0].street">
+				<label>city</label><input name="addresses[0].city">
+				<label>code</label><input name="addresses[0].code">
 			</div>
 			<div>
-				<label>street</label><input name="address[1].street" value="">
-				<label>city</label><input name="address[1].city" value="Malville">
-				<label>code</label><input name="address[1].code" value="44260">
+				<label>street</label><input name="addresses[1].street" value="">
+				<label>city</label><input name="addresses[1].city" value="Malville">
+				<label>code</label><input name="addresses[1].code" value="44260">
 			</div>
 		</fieldset>
 

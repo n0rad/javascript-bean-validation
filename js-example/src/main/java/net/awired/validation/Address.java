@@ -1,9 +1,16 @@
 package net.awired.validation;
 
+import javax.validation.constraints.NotNull;
+
 public class Address {
 
+    @NotNull
     private String street;
+    @NotNull
     private String city;
+
+    @NotNull
+    @MyNotEmpty
     private String code;
 
     public String getStreet() {
