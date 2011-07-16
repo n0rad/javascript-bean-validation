@@ -42,7 +42,6 @@
 		</dependency>
 
 
-
 		<!-- Test -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -54,12 +53,6 @@
 			<groupId>rhino</groupId>
 			<artifactId>js</artifactId>
 			<version>1.7R2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>1.0.0.GA</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
