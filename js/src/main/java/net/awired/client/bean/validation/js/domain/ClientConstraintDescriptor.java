@@ -2,7 +2,7 @@ package net.awired.client.bean.validation.js.domain;
 
 import java.util.Map;
 
-public class Constraint {
+public class ClientConstraintDescriptor {
     private String type;
     private Map<String, Object> attributes;
 

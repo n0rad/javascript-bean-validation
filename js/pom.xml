@@ -12,24 +12,24 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>net.awired.client-bean-validation</groupId>
-	<artifactId>client-bean-validation-js</artifactId>
+	<artifactId>cbv-js</artifactId>
 	<name>Client Bean Validation - JS</name>
 	<packaging>jar</packaging>
 
 	<parent>
 		<groupId>net.awired.client-bean-validation</groupId>
-		<artifactId>client-bean-validation</artifactId>
+		<artifactId>cbv</artifactId>
 		<version>0.1-SNAPSHOT</version>
 		<relativePath>../</relativePath>
 	</parent>
 
 	<dependencies>
+
 		<dependency>
 			<groupId>net.awired.ajsl</groupId>
 			<artifactId>ajsl-core</artifactId>
 			<version>0.2-SNAPSHOT</version>
 		</dependency>
-	
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
@@ -41,17 +41,25 @@
 			<version>1.6.1</version>
 		</dependency>
 
-<dependency>
-    <groupId>javax.servlet</groupId>
-    <artifactId>servlet-api</artifactId>
-    <version>2.5</version>
-</dependency>
+
 
 		<!-- Test -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>r09</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>rhino</groupId>
 			<artifactId>js</artifactId>
 			<version>1.7R2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>1.0.0.GA</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -78,6 +86,7 @@
 			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
+
 
 
 	</dependencies>

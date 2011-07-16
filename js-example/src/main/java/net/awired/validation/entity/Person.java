@@ -6,13 +6,15 @@ import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import net.awired.validation.MyNotEmpty;
 
 public class Person {
 
-    @Size(min = 5, max = 10)
+    @Size(min = 2, max = 20)
     @NotNull(message = "firstname can not be null")
+    @Pattern(regexp = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$")
     private String firstname;
 
     @Valid

@@ -15,10 +15,15 @@ Validator = function() {
 				
 			},
 			'javax.validation.constraints.Digits' : function(obj, attributes) {
-				
+				if (obj == undefined) {
+					return true;
+				}
+				if (!isNaN(parseFloat(obj)) && isFinite(obj)) {
+					return true;
+				}
 			},
 			'javax.validation.constraints.Future' : function(obj, attributes) {
-				
+				return new Date(obj).getTime() >  new Date().getTime();
 			},
 			'javax.validation.constraints.Max' : function(obj, attributes) {
 				
@@ -30,13 +35,17 @@ Validator = function() {
 				return obj != undefined;
 			},
 			'javax.validation.constraints.Null' : function(obj, attributes) {
-				
+				return obj == undefined;
 			},
 			'javax.validation.constraints.Past' : function(obj, attributes) {
-				
+				return new Date(obj).getTime() <  new Date().getTime();				
 			},
 			'javax.validation.constraints.Pattern' : function(obj, attributes) {
-				
+				if (obj == undefined) {
+					return true;
+				}
+				var reg = new RegExp(attributes.regexp);
+				return obj.search(reg) != -1;
 			},
 			'javax.validation.constraints.Size' : function(obj, attributes) {
 				if ( obj == null ) {
@@ -57,9 +66,14 @@ Validator = function() {
 		return violation;
 	};
 
+	
+	this.validateProperty = function(beanDesc, propertyPath, value) {
+		
+	};
+	
 	this._validateRec = function(violation, bean, beanDesc, rootBean, previousBean, path) {
-		for (var key in beanDesc.elements) {
-			var eBeanDesc = beanDesc.elements[key];
+		for (var key in beanDesc.properties) {
+			var eBeanDesc = beanDesc.properties[key];
 			var ebean = bean ? bean[key] : undefined;
 			var epath = path ? path + '.' + key : key;
 			$this._validateConstraints(violation, ebean, eBeanDesc, rootBean, previousBean, epath);
@@ -78,6 +92,10 @@ Validator = function() {
 	};
 	
 	this._validateConstraints = function(violation, bean, beanDesc, rootBean, previousBean, path) {
+		if (beanDesc.constraints == null) {
+			return;
+		}
+		
 		for (var i = 0; i < beanDesc.constraints.length; i++) {
 			var constraint = beanDesc.constraints[i];
 			if ($this._constraintValidators[constraint.type] != undefined) {
@@ -85,8 +103,7 @@ Validator = function() {
 				if (!valid) {
 					var constraintViolation = {};
 					constraintViolation['invalidValue'] = bean;
-					// TODO change to ConstraintDescriptor ?
-					constraintViolation['beanDesc'] = beanDesc;
+					constraintViolation['clientConstraintDescriptor'] = constraint;
 					constraintViolation['leafBean'] = previousBean;
 					constraintViolation['message'] = "";
 					constraintViolation['messageTemplate'] = constraint.attributes.message;

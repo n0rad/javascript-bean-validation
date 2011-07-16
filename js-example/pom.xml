@@ -12,13 +12,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>net.awired.client-bean-validation</groupId>
-	<artifactId>client-bean-validation-js-example</artifactId>
+	<artifactId>cbv-js-example</artifactId>
 	<name>Client Bean Validation - JS example</name>
 	<packaging>war</packaging>
 
 	<parent>
 		<groupId>net.awired.client-bean-validation</groupId>
-		<artifactId>client-bean-validation</artifactId>
+		<artifactId>cbv</artifactId>
 		<version>0.1-SNAPSHOT</version>
 		<relativePath>../</relativePath>
 	</parent>
@@ -26,7 +26,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>net.awired.client-bean-validation</groupId>
-			<artifactId>client-bean-validation-js</artifactId>
+			<artifactId>cbv-js</artifactId>
 		</dependency>
 
 		<dependency>

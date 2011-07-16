@@ -6,11 +6,20 @@
         <servlet-name>MyServlet</servlet-name>
         <servlet-class>net.awired.validation.MainServlet</servlet-class>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>MyServlet</servlet-name>
         <url-pattern>/MyServlet</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Validator</servlet-name>
+        <servlet-class>net.awired.validation.ValidatorServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Validator</servlet-name>
+        <url-pattern>/Validator.js</url-pattern>
+    </servlet-mapping>
+
 
 	<welcome-file-list>
 		<welcome-file>MyServlet</welcome-file>

@@ -12,7 +12,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>net.awired.client-bean-validation</groupId>
-	<artifactId>client-bean-validation</artifactId>
+	<artifactId>cbv</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Client Bean Validation</name>
@@ -39,7 +39,7 @@
 		<dependencies>
 			<dependency>
 				<groupId>net.awired.client-bean-validation</groupId>
-				<artifactId>client-bean-validation-js</artifactId>
+				<artifactId>cbv-js</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>

@@ -11,35 +11,46 @@ import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ConstraintDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
 import net.awired.ajsl.core.lang.reflect.ReflectTool;
-import net.awired.client.bean.validation.js.domain.Constraint;
-import net.awired.client.bean.validation.js.domain.Element;
+import net.awired.client.bean.validation.js.domain.ClientConstraintDescriptor;
+import net.awired.client.bean.validation.js.domain.ClientPropertyDescriptor;
 
 public class ValidationService {
 
-    ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+    ValidatorFactory validatorFactory;
+
+    public ValidationService() {
+        this.validatorFactory = Validation.buildDefaultValidatorFactory();
+    }
+
+    public ValidationService(ValidatorFactory validatorFactory) {
+        this.validatorFactory = validatorFactory;
+    }
 
     public Object getValidationObject(Class<?> clazz) {
-        Element e = new Element();
+        ClientPropertyDescriptor e = new ClientPropertyDescriptor();
         fillValidationObject(clazz, e);
         return e;
     }
 
-    private void fillValidationObject(Class<?> clazz, Element e) {
+    ///////////////////////////////////////////////////////////////////////////
+
+    private void fillValidationObject(Class<?> clazz, ClientPropertyDescriptor e) {
         BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass(clazz);
 
         Set<PropertyDescriptor> constrainedProperties = beanDescriptor.getConstrainedProperties();
         for (PropertyDescriptor propertyDescriptor : constrainedProperties) {
-            Element element = new Element();
+            ClientPropertyDescriptor element = new ClientPropertyDescriptor();
             String propertyName = propertyDescriptor.getPropertyName();
-            e.getElements().put(propertyName, element);
+            e.retreaveCreatedProperties().put(propertyName, element);
 
             for (ConstraintDescriptor<?> constraintDescriptor : propertyDescriptor.getConstraintDescriptors()) {
-                Constraint constraint = new Constraint();
-                element.getConstraints().add(constraint);
+                ClientConstraintDescriptor constraint = new ClientConstraintDescriptor();
+                element.retreaveCreatedConstraints().add(constraint);
 
                 //TODO reporting, payload, group, reportassingle
                 constraint.setType(constraintDescriptor.getAnnotation().annotationType().getName());
-                constraint.setAttributes(constraintDescriptor.getAttributes());
+                Map<String, Object> attributes = constraintDescriptor.getAttributes();
+                constraint.setAttributes(attributes);
             }
 
             if (propertyDescriptor.isCascaded()) {
