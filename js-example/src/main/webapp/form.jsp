@@ -11,6 +11,7 @@
 	personConstraints = ${contraints};
 
 	$(function() {
+		var myform = $("form");
 		
 		var MyNotEmpty = function(obj, attributes) {
             if (obj == undefined) {
@@ -19,12 +20,25 @@
             return $.trim(obj).length > 0;
 		};
 		
-		$("form").submit(function() {
+		var validator = new Validator();
+		validator.registerConstraint("net.awired.validation.MyNotEmpty", MyNotEmpty);
+		
+		var inlineValidate = function(e) {
+			var f = myform;
+			var propertyDescriptor = validator.getPropertyDescriptorFromPath(personConstraints, this.name);
+			var listElem = $('[name="' + this.name + '"]', myform);
+			var violations = validator.validate(listElem.toObject({mode : 'combine', skipEmpty : false}), propertyDescriptor);
+		};
+		
+		var elements = $("input, textarea, select", myform);
+		elements.keyup(inlineValidate);
+		elements.change(inlineValidate);
+		
+		myform.submit(function() {
 			try {
-				$("input, textarea, select", this).removeClass('red');
+				var formElements = $("input, textarea, select", this);
+				formElements.removeClass('red');
 
-				var validator = new Validator();
-				validator.registerConstraint("net.awired.validation.MyNotEmpty", MyNotEmpty);
 				var dataObject = $(this).toObject({skipEmpty : false});
 				var violations = validator.validate(dataObject, personConstraints);
 				
@@ -80,9 +94,9 @@ LABEL,INPUT { /* 			display: block; */
 				<label>code</label><input name="addresses[1].code">
 			</div>
 			<div>
-				<label>street</label><input name="addresses[2].street">
-				<label>city</label><input name="addresses[2].city">
-				<label>code</label><input name="addresses[2].code">
+				<label>street</label><input name="addresses[3].street">
+				<label>city</label><input name="addresses[3].city">
+				<label>code</label><input name="addresses[3].code">
 			</div>
 		</fieldset>
 

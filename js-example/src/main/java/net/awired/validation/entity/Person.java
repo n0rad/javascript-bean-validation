@@ -4,21 +4,31 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.validation.Payload;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.validation.groups.Default;
 import net.awired.validation.MyNotEmpty;
 
 public class Person {
+
+    public static class Info implements Payload {
+    };
+
+    public static class Error implements Payload {
+    };
+
+    public interface MinimumValidation {
+    }
 
     @Size(min = 2, max = 20)
     @NotNull(message = "firstname can not be null")
     @Pattern(regexp = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$")
     private String firstname;
 
-    @Valid
-    @NotNull
+    @NotNull(groups = { MinimumValidation.class, Default.class }, payload = Info.class)
     private String lastname;
 
     public enum Gender {

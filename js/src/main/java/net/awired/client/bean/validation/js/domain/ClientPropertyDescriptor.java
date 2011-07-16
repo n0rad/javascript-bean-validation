@@ -4,10 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
+@JsonSerialize(include = Inclusion.NON_NULL)
 public class ClientPropertyDescriptor {
 
-    private String type;
+    /**
+     * null = ELEMENT
+     */
+    private PropertyType propertyType;
 
     private List<ClientConstraintDescriptor> constraints;
 
@@ -35,16 +41,16 @@ public class ClientPropertyDescriptor {
         return constraints;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getType() {
-        return type;
-    }
-
     public Map<String, ClientPropertyDescriptor> getProperties() {
         return properties;
+    }
+
+    public void setPropertyType(PropertyType propertyType) {
+        this.propertyType = propertyType;
+    }
+
+    public PropertyType getPropertyType() {
+        return propertyType;
     }
 
 }

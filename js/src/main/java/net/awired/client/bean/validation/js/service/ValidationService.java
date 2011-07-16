@@ -2,6 +2,8 @@ package net.awired.client.bean.validation.js.service;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +15,7 @@ import javax.validation.metadata.PropertyDescriptor;
 import net.awired.ajsl.core.lang.reflect.ReflectTool;
 import net.awired.client.bean.validation.js.domain.ClientConstraintDescriptor;
 import net.awired.client.bean.validation.js.domain.ClientPropertyDescriptor;
+import net.awired.client.bean.validation.js.domain.PropertyType;
 
 public class ValidationService {
 
@@ -45,12 +48,8 @@ public class ValidationService {
 
             for (ConstraintDescriptor<?> constraintDescriptor : propertyDescriptor.getConstraintDescriptors()) {
                 ClientConstraintDescriptor constraint = new ClientConstraintDescriptor();
+                fillClientConstraintFromServerConstraint(constraint, constraintDescriptor);
                 element.retreaveCreatedConstraints().add(constraint);
-
-                //TODO reporting, payload, group, reportassingle
-                constraint.setType(constraintDescriptor.getAnnotation().annotationType().getName());
-                Map<String, Object> attributes = constraintDescriptor.getAttributes();
-                constraint.setAttributes(attributes);
             }
 
             if (propertyDescriptor.isCascaded()) {
@@ -60,7 +59,7 @@ public class ValidationService {
                         Field field = clazz.getDeclaredField(propertyName);
                         ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
                         Class<?> elementListClass = (Class<?>) stringListType.getActualTypeArguments()[0];
-                        element.setType("array");
+                        element.setPropertyType(PropertyType.ARRAY);
                         fillValidationObject(elementListClass, element);
                     } catch (SecurityException e1) {
                         // TODO Auto-generated catch block
@@ -75,6 +74,33 @@ public class ValidationService {
                 } else if (elementClass != String.class) {
                     fillValidationObject(elementClass, element);
                 }
+            }
+        }
+    }
+
+    private void fillClientConstraintFromServerConstraint(ClientConstraintDescriptor clientConstraint,
+            ConstraintDescriptor<?> serverConstraint) {
+
+        clientConstraint.setType(serverConstraint.getAnnotation().annotationType().getName());
+        clientConstraint.setReportAsSingle(serverConstraint.isReportAsSingleViolation());
+        Map<String, Object> attributes = new HashMap<String, Object>(serverConstraint.getAttributes());
+        if (((Class[]) attributes.get("groups")).length == 0) {
+            attributes.remove("groups");
+        }
+        if (((Class[]) attributes.get("payload")).length == 0) {
+            attributes.remove("payload");
+        }
+        clientConstraint.setAttributes(attributes);
+
+        Set<ConstraintDescriptor<?>> composingConstraints = serverConstraint.getComposingConstraints();
+        if (!composingConstraints.isEmpty()) {
+            Set<ClientConstraintDescriptor> constraints = new HashSet<ClientConstraintDescriptor>(
+                    composingConstraints.size());
+            clientConstraint.setComposingConstraints(constraints);
+            for (ConstraintDescriptor<?> serverComposingConstraint : composingConstraints) {
+                ClientConstraintDescriptor clientComposingConstraint = new ClientConstraintDescriptor();
+                constraints.add(clientComposingConstraint);
+                fillClientConstraintFromServerConstraint(clientComposingConstraint, serverComposingConstraint);
             }
         }
     }

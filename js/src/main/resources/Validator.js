@@ -1,5 +1,79 @@
 Validator = function() {
 	var $this = this;
+
+	this.registerConstraint = function(type, func) {
+		$this._constraintValidators[type] = func;
+	};
+
+	this.validate = function(property, propertyDescriptor, groups) {
+		var violation = [];
+		$this._validateRec(violation, property, propertyDescriptor, property, property);
+		return violation;
+	};
+	
+	this.getPropertyDescriptorFromPath = function(rootPropertyDescriptor, propertyPath) {
+		var flag = false;
+		var properties = propertyPath.split('.');
+		var currentPropDesc = rootPropertyDescriptor;
+		for (var i = 0; i < properties.length; i++) {
+			var property = properties[i].replace(/\[.*?\]/g, '');
+			currentPropDesc = currentPropDesc.properties[property];
+			if (!currentPropDesc) {
+				throw "property not found : " + property; 
+			}
+		}
+		return currentPropDesc;
+	};
+	
+	/////////////////////////////////////////////////////////////
+	
+	this._validateRec = function(violation, property, propertyDescriptor, rootProperty, previousProperty, path) {
+		for (var key in propertyDescriptor.properties) {
+			var ePropertyDescriptor = propertyDescriptor.properties[key];
+			var eproperty = property ? property[key] : undefined;
+			var epath = path ? path + '.' + key : key;
+			$this._validateConstraints(violation, eproperty, ePropertyDescriptor, rootProperty, previousProperty, epath);
+			if (ePropertyDescriptor.type == 'array') {
+				if ($.isArray(eproperty)) {
+					for (var i = 0; i < eproperty.length; i++) {
+						var leproperty = eproperty[i];
+						var lepath = epath + '[' + i + ']';
+						$this._validateRec(violation, leproperty, ePropertyDescriptor, rootProperty, property, lepath);				
+					}
+				}
+			} else {
+				$this._validateRec(violation, eproperty, ePropertyDescriptor, rootProperty, property, epath);				
+			}
+		}
+	};
+	
+	this._validateConstraints = function(violation, property, propertyDescriptor, rootProperty, previousProperty, path) {
+		if (propertyDescriptor.constraints == null) {
+			return;
+		}
+		
+		for (var i = 0; i < propertyDescriptor.constraints.length; i++) {
+			var constraint = propertyDescriptor.constraints[i];
+			if ($this._constraintValidators[constraint.type] != undefined) {
+				var valid = $this._constraintValidators[constraint.type](property, constraint.attributes);
+				if (!valid) {
+					var constraintViolation = {};
+					constraintViolation['invalidValue'] = property;
+					constraintViolation['clientConstraintDescriptor'] = constraint;
+					constraintViolation['leafProperty'] = previousProperty;
+					constraintViolation['message'] = "";
+					constraintViolation['messageTemplate'] = constraint.attributes.message;
+					constraintViolation['rootProperty'] = rootProperty;
+					constraintViolation['propertyPath'] = path;
+					
+					violation.push(constraintViolation);
+				}				
+			} else {
+				alert("Constraint validator not found for : " + constraint.type);
+			}
+		}		
+	};
+	
 	
 	this._constraintValidators = {
 			'javax.validation.constraints.AssertFalse' : function(obj, attributes) {
@@ -55,67 +129,6 @@ Validator = function() {
 				return length >= attributes.min && length <= attributes.max;
 			}
 	};
-	
-	this.registerConstraint = function(type, func) {
-		$this._constraintValidators[type] = func;
-	};
 
-	this.validate = function(bean, beanDesc) {
-		var violation = [];
-		$this._validateRec(violation, bean, beanDesc, bean, bean);
-		return violation;
-	};
-
-	
-	this.validateProperty = function(beanDesc, propertyPath, value) {
-		
-	};
-	
-	this._validateRec = function(violation, bean, beanDesc, rootBean, previousBean, path) {
-		for (var key in beanDesc.properties) {
-			var eBeanDesc = beanDesc.properties[key];
-			var ebean = bean ? bean[key] : undefined;
-			var epath = path ? path + '.' + key : key;
-			$this._validateConstraints(violation, ebean, eBeanDesc, rootBean, previousBean, epath);
-			if (eBeanDesc.type == 'array') {
-				if ($.isArray(ebean)) {
-					for (var i = 0; i < ebean.length; i++) {
-						var lebean = ebean[i];
-						var lepath = epath + '[' + i + ']';
-						$this._validateRec(violation, lebean, eBeanDesc, rootBean, bean, lepath);				
-					}
-				}
-			} else {
-				$this._validateRec(violation, ebean, eBeanDesc, rootBean, bean, epath);				
-			}
-		}
-	};
-	
-	this._validateConstraints = function(violation, bean, beanDesc, rootBean, previousBean, path) {
-		if (beanDesc.constraints == null) {
-			return;
-		}
-		
-		for (var i = 0; i < beanDesc.constraints.length; i++) {
-			var constraint = beanDesc.constraints[i];
-			if ($this._constraintValidators[constraint.type] != undefined) {
-				var valid = $this._constraintValidators[constraint.type](bean, constraint.attributes);
-				if (!valid) {
-					var constraintViolation = {};
-					constraintViolation['invalidValue'] = bean;
-					constraintViolation['clientConstraintDescriptor'] = constraint;
-					constraintViolation['leafBean'] = previousBean;
-					constraintViolation['message'] = "";
-					constraintViolation['messageTemplate'] = constraint.attributes.message;
-					constraintViolation['rootBean'] = rootBean;
-					constraintViolation['propertyPath'] = path;
-					
-					violation.push(constraintViolation);
-				}				
-			} else {
-				alert("Constraint validator not found for : " + constraint.type);
-			}
-		}		
-	};
 };
 

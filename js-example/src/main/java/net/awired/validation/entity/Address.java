@@ -1,5 +1,6 @@
 package net.awired.validation.entity;
 
+import net.awired.validation.FrenchZipcode;
 import net.awired.validation.MyNotEmpty;
 
 public class Address {
@@ -8,7 +9,7 @@ public class Address {
     private String street;
     @MyNotEmpty
     private String city;
-    @MyNotEmpty
+    @FrenchZipcode
     private String code;
 
     public String getStreet() {
