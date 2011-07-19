@@ -42,7 +42,7 @@ public class ValidationServiceTest {
         Bean b = new Bean();
         b.totos = new ArrayList<ValidationServiceTest.Toto>();
         b.totos.add(new Toto());
-        Object clientViolations = ClientValidationTestHelper.getClientViolations(b);
+        Object clientViolations = ClientValidationTestHelper.validate(b);
         //        Set<ConstraintViolation<Object>> serverViolations = ServerValidationTestHelper.getServerViolations(b);
         System.out.println();
     }

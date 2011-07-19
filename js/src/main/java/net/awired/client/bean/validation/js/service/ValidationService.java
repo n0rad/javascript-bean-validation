@@ -35,45 +35,57 @@ public class ValidationService {
         return e;
     }
 
+    public Object getValidationObject(Class<?> clazz, String property) {
+        ClientPropertyDescriptor clientDescriptor = new ClientPropertyDescriptor();
+        BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass(clazz);
+        PropertyDescriptor propertyDescriptor = beanDescriptor.getConstraintsForProperty(property);
+        processConstrainedProperties(clazz, clientDescriptor, propertyDescriptor);
+        return clientDescriptor;
+    }
+
     ///////////////////////////////////////////////////////////////////////////
 
-    private void fillValidationObject(Class<?> clazz, ClientPropertyDescriptor e) {
+    private void fillValidationObject(Class<?> clazz, ClientPropertyDescriptor clientDescriptor) {
         BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass(clazz);
-
         Set<PropertyDescriptor> constrainedProperties = beanDescriptor.getConstrainedProperties();
         for (PropertyDescriptor propertyDescriptor : constrainedProperties) {
-            ClientPropertyDescriptor element = new ClientPropertyDescriptor();
-            String propertyName = propertyDescriptor.getPropertyName();
-            e.retreaveCreatedProperties().put(propertyName, element);
+            processConstrainedProperties(clazz, clientDescriptor, propertyDescriptor);
+        }
+    }
 
-            for (ConstraintDescriptor<?> constraintDescriptor : propertyDescriptor.getConstraintDescriptors()) {
-                ClientConstraintDescriptor constraint = new ClientConstraintDescriptor();
-                fillClientConstraintFromServerConstraint(constraint, constraintDescriptor);
-                element.retreaveCreatedConstraints().add(constraint);
-            }
+    private void processConstrainedProperties(Class<?> clazz, ClientPropertyDescriptor clientDescriptor,
+            PropertyDescriptor propertyDescriptor) {
+        ClientPropertyDescriptor element = new ClientPropertyDescriptor();
+        String propertyName = propertyDescriptor.getPropertyName();
+        clientDescriptor.retreaveCreatedProperties().put(propertyName, element);
 
-            if (propertyDescriptor.isCascaded()) {
-                Class<?> elementClass = propertyDescriptor.getElementClass();
-                if (ReflectTool.classImplement(elementClass, List.class)) {
-                    try {
-                        Field field = clazz.getDeclaredField(propertyName);
-                        ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
-                        Class<?> elementListClass = (Class<?>) stringListType.getActualTypeArguments()[0];
-                        element.setPropertyType(PropertyType.ARRAY);
-                        fillValidationObject(elementListClass, element);
-                    } catch (SecurityException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    } catch (NoSuchFieldException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    }
-                } else if (ReflectTool.classImplement(elementClass, Map.class)) {
-                    //TODO MAP
-                    //TODO SET
-                } else if (elementClass != String.class) {
-                    fillValidationObject(elementClass, element);
+        for (ConstraintDescriptor<?> constraintDescriptor : propertyDescriptor.getConstraintDescriptors()) {
+            ClientConstraintDescriptor constraint = new ClientConstraintDescriptor();
+            fillClientConstraintFromServerConstraint(constraint, constraintDescriptor);
+            element.retreaveCreatedConstraints().add(constraint);
+        }
+
+        if (propertyDescriptor.isCascaded()) {
+            Class<?> elementClass = propertyDescriptor.getElementClass();
+            if (ReflectTool.classImplement(elementClass, List.class)) {
+                try {
+                    Field field = clazz.getDeclaredField(propertyName);
+                    ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
+                    Class<?> elementListClass = (Class<?>) stringListType.getActualTypeArguments()[0];
+                    element.setPropertyType(PropertyType.ARRAY);
+                    fillValidationObject(elementListClass, element);
+                } catch (SecurityException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } catch (NoSuchFieldException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
                 }
+            } else if (ReflectTool.classImplement(elementClass, Map.class)) {
+                //TODO MAP
+                //TODO SET
+            } else if (elementClass != String.class) {
+                fillValidationObject(elementClass, element);
             }
         }
     }

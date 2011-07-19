@@ -2,6 +2,7 @@ package net.awired.client.validation.tools;
 
 import java.io.InputStreamReader;
 import java.util.Set;
+import net.awired.client.bean.validation.js.domain.ClientConstraintViolation;
 import net.awired.client.bean.validation.js.service.ValidationService;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.mozilla.javascript.Context;
@@ -41,19 +42,52 @@ public class ClientValidationTestHelper {
         }
     }
 
-    public static <T> Set<ClientConstraintViolation> getClientViolations(T o) throws Exception {
+    //TODO manage groups
+    public static <T> Set<ClientConstraintViolation> validateValue(ClientConstraintInfo info, Class<T> o,
+            String propertyName, Object value, Class<?>... groups) {
+        ValidationService validationService = new ValidationService();
+        Object validationObject = validationService.getValidationObject(o, propertyName);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String jsonContraints = mapper.writeValueAsString(validationObject);
+            String jsonValue = "{\"" + propertyName + "\":" + mapper.writeValueAsString(value) + "}";
+            cx.evaluateReader(scope, info.getJsConstraint(), "", 1, null);
+            cx.evaluateString(scope, "validator = new Validator();", "", 1, null);
+            cx.evaluateString(scope,
+                    "validator.registerConstraint('" + info.getConstraintType() + "', " + info.getJsConstraintName()
+                            + ")", "", 1, null);
+            cx.evaluateString(scope, "cv = validator.validateValue(JSON.parse('" + jsonValue + "'), JSON.parse('"
+                    + jsonContraints + "'), '" + propertyName + "')", "validator", 1, null);
+            NativeJavaObject result = (NativeJavaObject) cx.evaluateString(scope, "retreaveConstrainViolations(cv);",
+                    "retreave", 1, null);
+            @SuppressWarnings("unchecked")
+            Set<ClientConstraintViolation> constraintsViolations = (Set<ClientConstraintViolation>) result.unwrap();
+            return constraintsViolations;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //    List<ClientConstraintInfo> info,
+
+    //TODO manage groups
+    public static <T> Set<ClientConstraintViolation> validate(T o, Class<?>... groups) {
         ValidationService validationService = new ValidationService();
         Object validationObject = validationService.getValidationObject(o.getClass());
         ObjectMapper mapper = new ObjectMapper();
-        String jsonContraints = mapper.writeValueAsString(validationObject);
-        String jsonBean = mapper.writeValueAsString(o);
-
-        cx.evaluateString(scope, "cv = new Validator().validate(JSON.parse('" + jsonBean + "'), JSON.parse('"
-                + jsonContraints + "'))", "validator", 1, null);
-        NativeJavaObject result = (NativeJavaObject) cx.evaluateString(scope, "retreaveConstrainViolations(cv);",
-                "retreave", 1, null);
-        @SuppressWarnings("unchecked")
-        Set<ClientConstraintViolation> constraintsViolations = (Set<ClientConstraintViolation>) result.unwrap();
-        return constraintsViolations;
+        try {
+            String jsonContraints = mapper.writeValueAsString(validationObject);
+            String jsonBean = mapper.writeValueAsString(o);
+            cx.evaluateString(scope, "cv = new Validator().validate(JSON.parse('" + jsonBean + "'), JSON.parse('"
+                    + jsonContraints + "'))", "validator", 1, null);
+            NativeJavaObject result = (NativeJavaObject) cx.evaluateString(scope, "retreaveConstrainViolations(cv);",
+                    "retreave", 1, null);
+            @SuppressWarnings("unchecked")
+            Set<ClientConstraintViolation> constraintsViolations = (Set<ClientConstraintViolation>) result.unwrap();
+            return constraintsViolations;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
+
 }

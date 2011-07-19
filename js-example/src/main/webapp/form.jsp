@@ -8,6 +8,19 @@
 <script type="text/javascript" src="jquery.toObject.js"></script>
 <script type="text/javascript">
 
+SecurityCheck = function(obj, attributes) {
+	if (obj == null) {
+		return true;
+	}
+	
+	if (obj.personalNumber == undefined) {
+		return false;
+	}
+	
+	return "000000-0000" != obj.personalNumber;
+};
+
+
 	personConstraints = ${contraints};
 
 	$(function() {
@@ -22,6 +35,10 @@
 		
 		var validator = new Validator();
 		validator.registerConstraint("net.awired.validation.MyNotEmpty", MyNotEmpty);
+		validator.registerConstraint("org.hibernate.jsr303.tck.tests.constraints.application.SecurityCheck", SecurityCheck);
+		
+		var ttconstraint = {"properties":{"test":{"constraints":[{"type":"org.hibernate.jsr303.tck.tests.constraints.application.SecurityCheck","attributes":{"message":"toto42"},"reportAsSingle":false}]}}}; 
+		var res = validator.validateValue({"test" : "salut"}, ttconstraint, 'test');
 		
 		var inlineValidate = function(e) {
 			var f = myform;

@@ -2,7 +2,7 @@
 function retreaveConstrainViolations(violations) {
 	var res = new java.util.HashSet();
 	for (var i = 0; i < violations.length; i++) {
-		var clientViolation = new net.awired.client.validation.tools.ClientConstraintViolation();
+		var clientViolation = new net.awired.client.bean.validation.js.domain.ClientConstraintViolation();
 		res.add(clientViolation);
 		
 		var clientConstraintDescriptor = new net.awired.client.bean.validation.js.domain.ClientConstraintDescriptor();

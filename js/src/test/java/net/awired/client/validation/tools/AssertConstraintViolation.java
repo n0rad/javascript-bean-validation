@@ -3,16 +3,17 @@ package net.awired.client.validation.tools;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import junit.framework.Assert;
+import net.awired.client.bean.validation.js.domain.ClientConstraintViolation;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
 public class AssertConstraintViolation {
 
-    public static void assertClientServerEquals(Set<ConstraintViolation<Object>> serverViolations,
+    public static <T> void assertServerEqualsClient(Set<ConstraintViolation<T>> serverViolations,
             Set<ClientConstraintViolation> clientViolations) {
 
         Assert.assertEquals(serverViolations.size(), clientViolations.size());
-        for (final ConstraintViolation<Object> serverViolation : serverViolations) {
+        for (final ConstraintViolation<T> serverViolation : serverViolations) {
             final String serverPath = serverViolation.getPropertyPath().toString();
             final String serverConstraintClassName = serverViolation.getConstraintDescriptor().getAnnotation()
                     .annotationType().getName();
@@ -35,7 +36,7 @@ public class AssertConstraintViolation {
                     clientViolation);
 
             // TODO put back
-            //            Assert.assertEquals(serverViolation.getMessage(), clientViolation.getMessage());
+            //Assert.assertEquals(serverViolation.getMessage(), clientViolation.getMessage());
             Assert.assertEquals(serverViolation.getMessageTemplate(), clientViolation.getMessageTemplate());
         }
     }

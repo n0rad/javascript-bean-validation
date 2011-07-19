@@ -1,6 +1,5 @@
-package net.awired.client.validation.tools;
+package net.awired.client.bean.validation.js.domain;
 
-import net.awired.client.bean.validation.js.domain.ClientConstraintDescriptor;
 
 public class ClientConstraintViolation {
     private Object invalidValue;

@@ -5,6 +5,12 @@ Validator = function() {
 		$this._constraintValidators[type] = func;
 	};
 
+	this.validateValue = function(property, propertyDescriptor, subProperty, groups) {
+		var violation = [];
+		$this._validatePropertyRec(violation, property, propertyDescriptor, property, property, "", subProperty);
+		return violation;
+	}
+	
 	this.validate = function(property, propertyDescriptor, groups) {
 		var violation = [];
 		$this._validateRec(violation, property, propertyDescriptor, property, property);
@@ -29,26 +35,30 @@ Validator = function() {
 	
 	this._validateRec = function(violation, property, propertyDescriptor, rootProperty, previousProperty, path) {
 		for (var key in propertyDescriptor.properties) {
-			var ePropertyDescriptor = propertyDescriptor.properties[key];
-			var eproperty = property ? property[key] : undefined;
-			var epath = path ? path + '.' + key : key;
-			$this._validateConstraints(violation, eproperty, ePropertyDescriptor, rootProperty, previousProperty, epath);
-			if (ePropertyDescriptor.type == 'array') {
-				if ($.isArray(eproperty)) {
-					for (var i = 0; i < eproperty.length; i++) {
-						var leproperty = eproperty[i];
-						var lepath = epath + '[' + i + ']';
-						$this._validateRec(violation, leproperty, ePropertyDescriptor, rootProperty, property, lepath);				
-					}
-				}
-			} else {
-				$this._validateRec(violation, eproperty, ePropertyDescriptor, rootProperty, property, epath);				
-			}
+			this._validatePropertyRec(violation, property, propertyDescriptor, rootProperty, previousProperty, path, key);
 		}
 	};
 	
+	this._validatePropertyRec = function(violation, property, propertyDescriptor, rootProperty, previousProperty, path, key) {
+		var ePropertyDescriptor = propertyDescriptor.properties[key];
+		var eproperty = property ? property[key] : undefined;
+		var epath = path ? path + '.' + key : key;
+		$this._validateConstraints(violation, eproperty, ePropertyDescriptor, rootProperty, previousProperty, epath);
+		if (ePropertyDescriptor.type == 'array') {
+			if ($.isArray(eproperty)) {
+				for (var i = 0; i < eproperty.length; i++) {
+					var leproperty = eproperty[i];
+					var lepath = epath + '[' + i + ']';
+					$this._validateRec(violation, leproperty, ePropertyDescriptor, rootProperty, property, lepath);				
+				}
+			}
+		} else {
+			$this._validateRec(violation, eproperty, ePropertyDescriptor, rootProperty, property, epath);				
+		}		
+	}
+	
 	this._validateConstraints = function(violation, property, propertyDescriptor, rootProperty, previousProperty, path) {
-		if (propertyDescriptor.constraints == null) {
+		if (!propertyDescriptor.constraints) {
 			return;
 		}
 		
