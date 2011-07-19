@@ -1,19 +1,26 @@
 Validator = function() {
 	var $this = this;
+	this.defaultGroup = "javax.validation.groups.Default";
 
 	this.registerConstraint = function(type, func) {
 		$this._constraintValidators[type] = func;
 	};
 
 	this.validateValue = function(property, propertyDescriptor, subProperty, groups) {
+		if (groups == undefined || groups.length == 0) {
+			groups = [$this.defaultGroup];
+		}
 		var violation = [];
-		$this._validatePropertyRec(violation, property, propertyDescriptor, property, property, "", subProperty);
+		$this._validatePropertyRec(groups, violation, property, propertyDescriptor, property, property, "", subProperty);
 		return violation;
 	}
 	
 	this.validate = function(property, propertyDescriptor, groups) {
+		if (groups == undefined || groups.length == 0) {
+			groups = [$this.defaultGroup];
+		}
 		var violation = [];
-		$this._validateRec(violation, property, propertyDescriptor, property, property);
+		$this._validateRec(groups, violation, property, propertyDescriptor, property, property);
 		return violation;
 	};
 	
@@ -33,52 +40,76 @@ Validator = function() {
 	
 	/////////////////////////////////////////////////////////////
 	
-	this._validateRec = function(violation, property, propertyDescriptor, rootProperty, previousProperty, path) {
+	this._validateRec = function(groups, violation, property, propertyDescriptor, rootProperty, previousProperty, path) {
+		$this._validateConstraints(groups, violation, property, propertyDescriptor, rootProperty, previousProperty, path);
 		for (var key in propertyDescriptor.properties) {
-			this._validatePropertyRec(violation, property, propertyDescriptor, rootProperty, previousProperty, path, key);
+			this._validatePropertyRec(groups, violation, property, propertyDescriptor, rootProperty, previousProperty, path, key);
 		}
 	};
 	
-	this._validatePropertyRec = function(violation, property, propertyDescriptor, rootProperty, previousProperty, path, key) {
+	this._validatePropertyRec = function(groups, violation, property, propertyDescriptor, rootProperty, previousProperty, path, key) {
 		var ePropertyDescriptor = propertyDescriptor.properties[key];
 		var eproperty = property ? property[key] : undefined;
 		var epath = path ? path + '.' + key : key;
-		$this._validateConstraints(violation, eproperty, ePropertyDescriptor, rootProperty, previousProperty, epath);
+		$this._validateConstraints(groups, violation, eproperty, ePropertyDescriptor, rootProperty, previousProperty, epath);
 		if (ePropertyDescriptor.type == 'array') {
 			if ($.isArray(eproperty)) {
 				for (var i = 0; i < eproperty.length; i++) {
 					var leproperty = eproperty[i];
 					var lepath = epath + '[' + i + ']';
-					$this._validateRec(violation, leproperty, ePropertyDescriptor, rootProperty, property, lepath);				
+					$this._validateRec(groups, violation, leproperty, ePropertyDescriptor, rootProperty, property, lepath);				
 				}
 			}
 		} else {
-			$this._validateRec(violation, eproperty, ePropertyDescriptor, rootProperty, property, epath);				
+			$this._validateRec(groups, violation, eproperty, ePropertyDescriptor, rootProperty, property, epath);				
 		}		
 	}
 	
-	this._validateConstraints = function(violation, property, propertyDescriptor, rootProperty, previousProperty, path) {
+	this._validateConstraints = function(groups, violation, property, propertyDescriptor, rootProperty, previousProperty, path) {
 		if (!propertyDescriptor.constraints) {
 			return;
 		}
 		
+		var done = [];
 		for (var i = 0; i < propertyDescriptor.constraints.length; i++) {
 			var constraint = propertyDescriptor.constraints[i];
 			if ($this._constraintValidators[constraint.type] != undefined) {
-				var valid = $this._constraintValidators[constraint.type](property, constraint.attributes);
-				if (!valid) {
-					var constraintViolation = {};
-					constraintViolation['invalidValue'] = property;
-					constraintViolation['clientConstraintDescriptor'] = constraint;
-					constraintViolation['leafProperty'] = previousProperty;
-					constraintViolation['message'] = "";
-					constraintViolation['messageTemplate'] = constraint.attributes.message;
-					constraintViolation['rootProperty'] = rootProperty;
-					constraintViolation['propertyPath'] = path;
+				if (done.indexOf(constraint.type) == -1) { // skip if this constraint is already done on this element 
+					var groupMatch = false;
+					for (var j = 0; j < groups.length; j++) {
+						if (groups[j] == $this.defaultGroup && constraint.attributes.groups == undefined) {
+							// group is default and constraint have no group
+							groupMatch = true;
+							break;
+						}
+						if (constraint.attributes.groups != undefined && constraint.attributes.groups.indexOf(groups[j]) != -1) {
+							// group found for this constraint
+							groupMatch = true;
+							break;
+						}
+					}
+					if (!groupMatch) {
+						continue;
+					}
 					
-					violation.push(constraintViolation);
-				}				
+					
+					var valid = $this._constraintValidators[constraint.type](property, constraint.attributes);
+					if (!valid) {
+						var constraintViolation = {};
+						constraintViolation['invalidValue'] = property;
+						constraintViolation['clientConstraintDescriptor'] = constraint;
+						constraintViolation['leafProperty'] = previousProperty;
+						constraintViolation['message'] = "";
+						constraintViolation['messageTemplate'] = constraint.attributes.message;
+						constraintViolation['rootProperty'] = rootProperty;
+						constraintViolation['propertyPath'] = path;
+						
+						violation.push(constraintViolation);
+						done.push(constraint.type);
+					}
+				}
 			} else {
+				//TODO manage it
 				alert("Constraint validator not found for : " + constraint.type);
 			}
 		}		

@@ -87,7 +87,6 @@ public class ClientValidationTestHelper {
 
     /////////////////////////////////////////////////////////////////////////////////////////////
 
-    //TODO manage groups
     private static <T> Set<ClientConstraintViolation> rhinoValidate(List<ClientConstraintInfo> info,
             Scenario<T> scenario, Class<?>... groups) {
         Preconditions.checkNotNull(info);
@@ -96,17 +95,18 @@ public class ClientValidationTestHelper {
         try {
             StringBuilder jsScript = new StringBuilder();
             jsScript.append("validator = new Validator();").append("\n");
-            //            cx.evaluateString(scope, "validator = new Validator();", "", 1, null);
-
             for (ClientConstraintInfo clientConstraint : info) {
-                //                cx.evaluateReader(scope, clientConstraint.getJsConstraint(), "", 1, null);
                 jsScript.append(CharStreams.toString(clientConstraint.getJsConstraint())).append("\n");
-                //                cx.evaluateString(scope, "validator.registerConstraint('" + clientConstraint.getConstraintType()
-                //                        + "', " + clientConstraint.getJsConstraintName() + ")", "", 1, null);
                 jsScript.append(
                         "validator.registerConstraint('" + clientConstraint.getConstraintType() + "', "
                                 + clientConstraint.getJsConstraintName() + ")").append("\n");
             }
+
+            List<String> groupList = new ArrayList<String>();
+            for (Class<?> clazz : groups) {
+                groupList.add(clazz.getName());
+            }
+            String jsonGroup = mapper.writeValueAsString(groupList);
 
             String query;
             if (scenario.scenario == ScenarioEnum.PROPERTY) {
@@ -116,17 +116,16 @@ public class ClientValidationTestHelper {
                 String jsonValue = "{\"" + scenario.propertyName + "\":" + mapper.writeValueAsString(scenario.value)
                         + "}";
                 query = "cv = validator.validateValue(JSON.parse('" + jsonValue + "'), JSON.parse('" + jsonContraints
-                        + "'), '" + scenario.propertyName + "')";
+                        + "'), '" + scenario.propertyName + "', JSON.parse('" + jsonGroup + "'))";
             } else if (scenario.scenario == ScenarioEnum.OBJECT) {
                 Object validationObject = validationService.getValidationObject(scenario.obj.getClass());
                 String jsonContraints = mapper.writeValueAsString(validationObject);
                 String jsonBean = mapper.writeValueAsString(scenario.obj);
                 query = "cv = validator.validate(JSON.parse('" + jsonBean + "'), JSON.parse('" + jsonContraints
-                        + "'))";
+                        + "'), JSON.parse('" + jsonGroup + "'))";
             } else {
                 throw new RuntimeException("unknow scenario type");
             }
-            //            cx.evaluateString(scope, query, "validator", 1, null);
             jsScript.append(query).append("\n");
 
             System.out.println(jsScript.toString());

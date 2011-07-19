@@ -36,22 +36,22 @@ public class ValidationRequirementTest extends AbstractTest {
         TestUtil.assertCorrectConstraintTypes(violations, clientViolations, SecurityCheck.class);
 
         violations = validator.validate(sarah, TightSecurity.class);
-        clientViolations = ClientValidationTestHelper.validate(sarah, TightSecurity.class);
+        clientViolations = ClientValidationTestHelper.validate(constraintInfo, sarah, TightSecurity.class);
         TestUtil.assertCorrectNumberOfViolations(violations, clientViolations, 1); // SecurityCheck for TightSecurity in Citizen
         TestUtil.assertCorrectConstraintTypes(violations, clientViolations, SecurityCheck.class);
 
         // just to make sure - validating against a group which does not have any constraints assigned to it
         violations = validator.validate(sarah, DummyGroup.class);
-        clientViolations = ClientValidationTestHelper.validate(sarah, DummyGroup.class);
+        clientViolations = ClientValidationTestHelper.validate(constraintInfo, sarah, DummyGroup.class);
         TestUtil.assertCorrectNumberOfViolations(violations, clientViolations, 0);
 
         sarah.setPersonalNumber("740523-1234");
         violations = validator.validate(sarah);
-        clientViolations = ClientValidationTestHelper.validate(sarah);
+        clientViolations = ClientValidationTestHelper.validate(constraintInfo, sarah);
         TestUtil.assertCorrectNumberOfViolations(violations, clientViolations, 0);
 
         violations = validator.validate(sarah, TightSecurity.class);
-        clientViolations = ClientValidationTestHelper.validate(sarah, TightSecurity.class);
+        clientViolations = ClientValidationTestHelper.validate(constraintInfo, sarah, TightSecurity.class);
         TestUtil.assertCorrectNumberOfViolations(violations, clientViolations, 0);
     }
 
