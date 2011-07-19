@@ -51,7 +51,6 @@ Validator = function() {
 		var ePropertyDescriptor = propertyDescriptor.properties[key];
 		var eproperty = property ? property[key] : undefined;
 		var epath = path ? path + '.' + key : key;
-		$this._validateConstraints(groups, violation, eproperty, ePropertyDescriptor, rootProperty, previousProperty, epath);
 		if (ePropertyDescriptor.type == 'array') {
 			if ($.isArray(eproperty)) {
 				for (var i = 0; i < eproperty.length; i++) {

@@ -27,7 +27,8 @@
 			return "000000-0000" != obj.personalNumber;
 		}
 		validator.registerConstraint('org.hibernate.jsr303.tck.tests.constraints.application.SecurityCheck', SecurityCheck)
-		cv = validator.validate(JSON.parse('{"gender":"FEMALE","firstName":"Sarah","lastName":"Jones","personalNumber":"000000-0000"}'), JSON.parse('{"properties":{"lastName":{"constraints":[{"type":"javax.validation.constraints.NotNull","attributes":{"message":"{javax.validation.constraints.NotNull.message}"},"reportAsSingle":false}]},"firstName":{"constraints":[{"type":"javax.validation.constraints.NotNull","attributes":{"message":"{javax.validation.constraints.NotNull.message}"},"reportAsSingle":false}]},"personalNumber":{"constraints":[{"type":"javax.validation.constraints.Pattern","attributes":{"message":"Personal number must be 10 digits with the last 4 separated by a dash.","flags":[],"regexp":"^[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]$"},"reportAsSingle":false}]}},"constraints":[{"type":"org.hibernate.jsr303.tck.tests.constraints.application.SecurityCheck","attributes":{"message":"Security check failed.","groups":["javax.validation.groups.Default","org.hibernate.jsr303.tck.tests.constraints.application.TightSecurity"]},"reportAsSingle":false},{"type":"org.hibernate.jsr303.tck.tests.constraints.application.SecurityCheck","attributes":{"message":"Security check failed.","groups":["javax.validation.groups.Default"]},"reportAsSingle":false}]}'))
+		cv = validator.validateValue(JSON.parse('{"test":"salut"}'), JSON.parse('{"properties":{"test":{"constraints":[{"type":"org.hibernate.jsr303.tck.tests.constraints.application.SecurityCheck","attributes":{"message":"toto42"},"reportAsSingle":false}]}}}'), 'test', JSON.parse('[]'))
+
 
 
 		
@@ -42,12 +43,13 @@
 		};
 		
 		validator.registerConstraint("net.awired.validation.MyNotEmpty", MyNotEmpty);
-				
+
 		var inlineValidate = function(e) {
 			var f = myform;
 			var propertyDescriptor = validator.getPropertyDescriptorFromPath(personConstraints, this.name);
 			var listElem = $('[name="' + this.name + '"]', myform);
-			var violations = validator.validate(listElem.toObject({mode : 'combine', skipEmpty : false}), propertyDescriptor);
+			var jsonData = listElem.toObject({mode : 'combine', skipEmpty : false});
+			var violations = validator.validateValue(jsonData, propertyDescriptor, this.name);
 		};
 		
 		var elements = $("input, textarea, select", myform);
@@ -109,9 +111,9 @@ LABEL,INPUT { /* 			display: block; */
 			<legend>Addresses</legend>
 
 			<div>
-				<label>street</label><input name="addresses[1].street">
-				<label>city</label><input name="addresses[1].city">
-				<label>code</label><input name="addresses[1].code">
+				<label>street</label><input name="addresses[0].street">
+				<label>city</label><input name="addresses[0].city">
+				<label>code</label><input name="addresses[0].code">
 			</div>
 			<div>
 				<label>street</label><input name="addresses[3].street">
