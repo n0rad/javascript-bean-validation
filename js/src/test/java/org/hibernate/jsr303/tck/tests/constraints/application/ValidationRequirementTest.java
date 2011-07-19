@@ -1,11 +1,13 @@
 package org.hibernate.jsr303.tck.tests.constraints.application;
 
+import java.io.InputStreamReader;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 import net.awired.client.bean.validation.js.domain.ClientConstraintViolation;
 import net.awired.client.validation.jsr303.tck.TestUtil;
+import net.awired.client.validation.tools.ClientConstraintInfo;
 import net.awired.client.validation.tools.ClientValidationTestHelper;
 import org.jboss.test.audit.annotations.SpecAssertion;
 import org.jboss.test.audit.annotations.SpecAssertions;
@@ -13,6 +15,9 @@ import org.jboss.testharness.AbstractTest;
 import org.junit.Test;
 
 public class ValidationRequirementTest extends AbstractTest {
+
+    ClientConstraintInfo constraintInfo = new ClientConstraintInfo(new InputStreamReader(getClass()
+            .getResourceAsStream("SecurityCheck.js")), "SecurityCheck", SecurityCheck.class.getName());
 
     @Test
     @SpecAssertions({ @SpecAssertion(section = "3.1", id = "c"), @SpecAssertion(section = "3.1", id = "d"),
@@ -25,7 +30,7 @@ public class ValidationRequirementTest extends AbstractTest {
 
         Validator validator = TestUtil.getValidatorUnderTest();
         Set<ConstraintViolation<Woman>> violations = validator.validate(sarah);
-        Set<ClientConstraintViolation> clientViolations = ClientValidationTestHelper.validate(sarah);
+        Set<ClientConstraintViolation> clientViolations = ClientValidationTestHelper.validate(constraintInfo, sarah);
 
         TestUtil.assertCorrectNumberOfViolations(violations, clientViolations, 1); // SecurityCheck for Default in Person
         TestUtil.assertCorrectConstraintTypes(violations, clientViolations, SecurityCheck.class);

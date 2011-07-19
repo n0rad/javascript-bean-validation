@@ -8,22 +8,30 @@
 <script type="text/javascript" src="jquery.toObject.js"></script>
 <script type="text/javascript">
 
-SecurityCheck = function(obj, attributes) {
-	if (obj == null) {
-		return true;
-	}
-	
-	if (obj.personalNumber == undefined) {
-		return false;
-	}
-	
-	return "000000-0000" != obj.personalNumber;
-};
 
 
 	personConstraints = ${contraints};
 
 	$(function() {
+	
+		validator = new Validator();
+		SecurityCheck = function(obj, attributes) {
+			if (obj == null) {
+				return true;
+			}
+			
+			if (obj.personalNumber == undefined) {
+				return false;
+			}
+			
+			return "000000-0000" != obj.personalNumber;
+		}
+		validator.registerConstraint('org.hibernate.jsr303.tck.tests.constraints.application.SecurityCheck', SecurityCheck)
+		cv = validator.validate(JSON.parse('{"gender":"FEMALE","firstName":"Sarah","lastName":"Jones","personalNumber":"000000-0000"}'), JSON.parse('{"properties":{"lastName":{"constraints":[{"type":"javax.validation.constraints.NotNull","attributes":{"message":"{javax.validation.constraints.NotNull.message}"},"reportAsSingle":false}]},"firstName":{"constraints":[{"type":"javax.validation.constraints.NotNull","attributes":{"message":"{javax.validation.constraints.NotNull.message}"},"reportAsSingle":false}]},"personalNumber":{"constraints":[{"type":"javax.validation.constraints.Pattern","attributes":{"message":"Personal number must be 10 digits with the last 4 separated by a dash.","flags":[],"regexp":"^[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]$"},"reportAsSingle":false}]}},"constraints":[{"type":"org.hibernate.jsr303.tck.tests.constraints.application.SecurityCheck","attributes":{"message":"Security check failed.","groups":["javax.validation.groups.Default","org.hibernate.jsr303.tck.tests.constraints.application.TightSecurity"]},"reportAsSingle":false},{"type":"org.hibernate.jsr303.tck.tests.constraints.application.SecurityCheck","attributes":{"message":"Security check failed.","groups":["javax.validation.groups.Default"]},"reportAsSingle":false}]}'))
+
+
+		
+		
 		var myform = $("form");
 		
 		var MyNotEmpty = function(obj, attributes) {
@@ -33,13 +41,8 @@ SecurityCheck = function(obj, attributes) {
             return $.trim(obj).length > 0;
 		};
 		
-		var validator = new Validator();
 		validator.registerConstraint("net.awired.validation.MyNotEmpty", MyNotEmpty);
-		validator.registerConstraint("org.hibernate.jsr303.tck.tests.constraints.application.SecurityCheck", SecurityCheck);
-		
-		var ttconstraint = {"properties":{"test":{"constraints":[{"type":"org.hibernate.jsr303.tck.tests.constraints.application.SecurityCheck","attributes":{"message":"toto42"},"reportAsSingle":false}]}}}; 
-		var res = validator.validateValue({"test" : "salut"}, ttconstraint, 'test');
-		
+				
 		var inlineValidate = function(e) {
 			var f = myform;
 			var propertyDescriptor = validator.getPropertyDescriptorFromPath(personConstraints, this.name);

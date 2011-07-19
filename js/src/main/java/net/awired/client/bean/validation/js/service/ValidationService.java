@@ -47,6 +47,14 @@ public class ValidationService {
 
     private void fillValidationObject(Class<?> clazz, ClientPropertyDescriptor clientDescriptor) {
         BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass(clazz);
+
+        Set<ConstraintDescriptor<?>> beanConstraints = beanDescriptor.getConstraintDescriptors();
+        for (ConstraintDescriptor<?> constraintDescriptor : beanConstraints) {
+            ClientConstraintDescriptor clientConstraintDescriptor = new ClientConstraintDescriptor();
+            fillClientConstraintFromServerConstraint(clientConstraintDescriptor, constraintDescriptor);
+            clientDescriptor.retreaveCreatedConstraints().add(clientConstraintDescriptor);
+        }
+
         Set<PropertyDescriptor> constrainedProperties = beanDescriptor.getConstrainedProperties();
         for (PropertyDescriptor propertyDescriptor : constrainedProperties) {
             processConstrainedProperties(clazz, clientDescriptor, propertyDescriptor);

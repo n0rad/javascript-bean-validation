@@ -13,6 +13,7 @@ import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.tools.shell.Global;
 import com.google.common.base.Preconditions;
+import com.google.common.io.CharStreams;
 
 public class ClientValidationTestHelper {
 
@@ -45,15 +46,19 @@ public class ClientValidationTestHelper {
         }
     }
 
+    ////
+
     public static <T> Set<ClientConstraintViolation> validateValue(ArrayList<ClientConstraintInfo> infos,
             Class<T> oClass, String propertyName, Object value, Class<?>... groups) {
         return rhinoValidate(infos, new Scenario<T>(oClass, propertyName, value), groups);
     }
 
     public static <T> Set<ClientConstraintViolation> validate(ArrayList<ClientConstraintInfo> infos, T obj,
-            String propertyName, Object value, Class<?>... groups) {
+            Class<?>... groups) {
         return rhinoValidate(infos, new Scenario<T>(obj), groups);
     }
+
+    ////
 
     public static <T> Set<ClientConstraintViolation> validateValue(ClientConstraintInfo info, Class<T> oClass,
             String propertyName, Object value, Class<?>... groups) {
@@ -62,20 +67,22 @@ public class ClientValidationTestHelper {
         return rhinoValidate(constraintInfos, new Scenario<T>(oClass, propertyName, value), groups);
     }
 
-    public static <T> Set<ClientConstraintViolation> validate(ClientConstraintInfo info, T obj, String propertyName,
-            Object value, Class<?>... groups) {
+    public static <T> Set<ClientConstraintViolation> validate(ClientConstraintInfo info, T obj, Class<?>... groups) {
         ArrayList<ClientConstraintInfo> constraintInfos = new ArrayList<ClientConstraintInfo>();
         constraintInfos.add(info);
         return rhinoValidate(constraintInfos, new Scenario<T>(obj), groups);
     }
 
+    ////
+
     public static <T> Set<ClientConstraintViolation> validateValue(Class<T> oClass, String propertyName,
             Object value, Class<?>... groups) {
-        return rhinoValidate(null, new Scenario<T>(oClass, propertyName, value), groups);
+        return rhinoValidate(new ArrayList<ClientConstraintInfo>(), new Scenario<T>(oClass, propertyName, value),
+                groups);
     }
 
     public static <T> Set<ClientConstraintViolation> validate(T obj, Class<?>... groups) {
-        return rhinoValidate(null, new Scenario<T>(obj), groups);
+        return rhinoValidate(new ArrayList<ClientConstraintInfo>(), new Scenario<T>(obj), groups);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,12 +94,18 @@ public class ClientValidationTestHelper {
         ObjectMapper mapper = new ObjectMapper();
         ValidationService validationService = new ValidationService();
         try {
-            cx.evaluateString(scope, "validator = new Validator();", "", 1, null);
+            StringBuilder jsScript = new StringBuilder();
+            jsScript.append("validator = new Validator();").append("\n");
+            //            cx.evaluateString(scope, "validator = new Validator();", "", 1, null);
 
             for (ClientConstraintInfo clientConstraint : info) {
-                cx.evaluateReader(scope, clientConstraint.getJsConstraint(), "", 1, null);
-                cx.evaluateString(scope, "validator.registerConstraint('" + clientConstraint.getConstraintType()
-                        + "', " + clientConstraint.getJsConstraintName() + ")", "", 1, null);
+                //                cx.evaluateReader(scope, clientConstraint.getJsConstraint(), "", 1, null);
+                jsScript.append(CharStreams.toString(clientConstraint.getJsConstraint())).append("\n");
+                //                cx.evaluateString(scope, "validator.registerConstraint('" + clientConstraint.getConstraintType()
+                //                        + "', " + clientConstraint.getJsConstraintName() + ")", "", 1, null);
+                jsScript.append(
+                        "validator.registerConstraint('" + clientConstraint.getConstraintType() + "', "
+                                + clientConstraint.getJsConstraintName() + ")").append("\n");
             }
 
             String query;
@@ -108,12 +121,17 @@ public class ClientValidationTestHelper {
                 Object validationObject = validationService.getValidationObject(scenario.obj.getClass());
                 String jsonContraints = mapper.writeValueAsString(validationObject);
                 String jsonBean = mapper.writeValueAsString(scenario.obj);
-                query = "cv = new Validator().validate(JSON.parse('" + jsonBean + "'), JSON.parse('" + jsonContraints
+                query = "cv = validator.validate(JSON.parse('" + jsonBean + "'), JSON.parse('" + jsonContraints
                         + "'))";
             } else {
                 throw new RuntimeException("unknow scenario type");
             }
-            cx.evaluateString(scope, query, "validator", 1, null);
+            //            cx.evaluateString(scope, query, "validator", 1, null);
+            jsScript.append(query).append("\n");
+
+            System.out.println(jsScript.toString());
+            cx.evaluateString(scope, jsScript.toString(), "validator", 1, null);
+
             NativeJavaObject result = (NativeJavaObject) cx.evaluateString(scope, "retreaveConstrainViolations(cv);",
                     "retreave", 1, null);
             @SuppressWarnings("unchecked")
