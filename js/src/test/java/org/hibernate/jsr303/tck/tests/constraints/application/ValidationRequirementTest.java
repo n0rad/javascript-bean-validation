@@ -4,6 +4,8 @@ import java.io.InputStreamReader;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import net.awired.client.bean.validation.js.domain.ClientConstraintViolation;
 import net.awired.client.validation.jsr303.tck.TestUtil;
@@ -12,6 +14,7 @@ import net.awired.client.validation.tools.ClientValidationTestHelper;
 import org.jboss.test.audit.annotations.SpecAssertion;
 import org.jboss.test.audit.annotations.SpecAssertions;
 import org.jboss.testharness.AbstractTest;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ValidationRequirementTest extends AbstractTest {
@@ -55,67 +58,89 @@ public class ValidationRequirementTest extends AbstractTest {
         TestUtil.assertCorrectNumberOfViolations(violations, clientViolations, 0);
     }
 
-    //    @Test
-    //    @SpecAssertions({ @SpecAssertion(section = "3.1", id = "d"), @SpecAssertion(section = "3.1.2", id = "a"),
-    //            @SpecAssertion(section = "3.1.2", id = "c") })
-    //    public void testFieldAccess() {
-    //        SuperWoman superwoman = new SuperWoman();
-    //
-    //        Validator validator = TestUtil.getValidatorUnderTest();
-    //        Set<ConstraintViolation<SuperWoman>> violations = validator.validateProperty(superwoman, "firstName");
-    //        TestUtil.assertCorrectNumberOfViolations(violations, 0);
-    //
-    //        superwoman.setFirstName(null);
-    //        violations = validator.validateProperty(superwoman, "firstName");
-    //        TestUtil.assertCorrectNumberOfViolations(violations, 1);
-    //        TestUtil.assertCorrectConstraintTypes(violations, NotNull.class);
-    //    }
-    //
-    //    @Test
-    //    @SpecAssertions({ @SpecAssertion(section = "3.1", id = "d"), @SpecAssertion(section = "3.1.2", id = "a"),
-    //            @SpecAssertion(section = "3.1.2", id = "d") })
-    //    public void testPropertyAccess() {
-    //        SuperWoman superwoman = new SuperWoman();
-    //
-    //        Validator validator = TestUtil.getValidatorUnderTest();
-    //        Set<ConstraintViolation<SuperWoman>> violations = validator.validateProperty(superwoman, "lastName");
-    //        TestUtil.assertCorrectNumberOfViolations(violations, 0);
-    //
-    //        superwoman.setHiddenName(null);
-    //        violations = validator.validateProperty(superwoman, "lastName");
-    //        TestUtil.assertCorrectNumberOfViolations(violations, 1);
-    //        TestUtil.assertCorrectConstraintTypes(violations, NotNull.class);
-    //    }
-    //
-    //    @Test
-    //    @SpecAssertions({ @SpecAssertion(section = "3.1.2", id = "a"), @SpecAssertion(section = "3.1.2", id = "b") })
-    //    public void testConstraintAppliedOnFieldAndProperty() {
-    //        Building building = new Building(10000000);
-    //
-    //        Validator validator = TestUtil.getValidatorUnderTest();
-    //        Set<ConstraintViolation<Building>> violations = validator.validate(building);
-    //        TestUtil.assertCorrectNumberOfViolations(violations, 2);
-    //        String expectedMessage = "Building costs are max {max} dollars.";
-    //        TestUtil.assertCorrectConstraintViolationMessages(violations, expectedMessage, expectedMessage);
-    //    }
-    //
-    //    @Test
-    //    @SpecAssertion(section = "3.1.2", id = "e")
-    //    public void testFieldAndPropertyVisibilityIsNotConstrained() {
-    //        Visibility entity = new Visibility();
-    //
-    //        Validator validator = TestUtil.getValidatorUnderTest();
-    //        Set<ConstraintViolation<Visibility>> violations = validator.validate(entity);
-    //        TestUtil.assertCorrectNumberOfViolations(violations, 6);
-    //        TestUtil.assertCorrectConstraintTypes(violations, Min.class, Min.class, Min.class, DecimalMin.class,
-    //                DecimalMin.class, DecimalMin.class);
-    //        TestUtil.assertCorrectConstraintViolationMessages(violations, "publicField", "protectedField",
-    //                "privateField", "publicProperty", "protectedProperty", "privateProperty");
-    //
-    //        entity.setValues(100);
-    //        violations = validator.validate(entity);
-    //        TestUtil.assertCorrectNumberOfViolations(violations, 0);
-    //    }
+    @Ignore("superwoman.getFirstname() return null but property is not null, causing serialization to say its null and validation on client side to be wrong")
+    @Test
+    @SpecAssertions({ @SpecAssertion(section = "3.1", id = "d"), @SpecAssertion(section = "3.1.2", id = "a"),
+            @SpecAssertion(section = "3.1.2", id = "c") })
+    public void testFieldAccess() {
+        SuperWoman superwoman = new SuperWoman();
+
+        Validator validator = TestUtil.getValidatorUnderTest();
+        Set<ConstraintViolation<SuperWoman>> violations = validator.validateProperty(superwoman, "firstName");
+        // TODO superwoman.getFirstname() return null but property is not null
+        // can not manage that with client validateValue();
+        // is it necessery to manage that for client validation ?
+        Set<ClientConstraintViolation> clientViolations = ClientValidationTestHelper.validateValue(constraintInfo,
+                superwoman.getClass(), "firstName", superwoman.getFirstName());
+        TestUtil.assertCorrectNumberOfViolations(violations, clientViolations, 0);
+
+        superwoman.setFirstName(null);
+        violations = validator.validateProperty(superwoman, "firstName");
+        clientViolations = ClientValidationTestHelper.validateValue(constraintInfo, superwoman.getClass(),
+                "firstName", superwoman.getFirstName());
+        TestUtil.assertCorrectNumberOfViolations(violations, clientViolations, 1);
+        TestUtil.assertCorrectConstraintTypes(violations, clientViolations, NotNull.class);
+    }
+
+    @Test
+    @SpecAssertions({ @SpecAssertion(section = "3.1", id = "d"), @SpecAssertion(section = "3.1.2", id = "a"),
+            @SpecAssertion(section = "3.1.2", id = "d") })
+    public void testPropertyAccess() {
+        SuperWoman superwoman = new SuperWoman();
+
+        Validator validator = TestUtil.getValidatorUnderTest();
+        Set<ConstraintViolation<SuperWoman>> violations = validator.validateProperty(superwoman, "lastName");
+        Set<ClientConstraintViolation> clientViolations = ClientValidationTestHelper.validateValue(constraintInfo,
+                superwoman.getClass(), "lastName", superwoman.getLastName());
+        TestUtil.assertCorrectNumberOfViolations(violations, clientViolations, 0);
+
+        superwoman.setHiddenName(null);
+        violations = validator.validateProperty(superwoman, "lastName");
+        //TODO change to validateProperty ???
+        clientViolations = ClientValidationTestHelper.validateValue(constraintInfo, superwoman.getClass(),
+                "lastName", superwoman.getLastName());
+        TestUtil.assertCorrectNumberOfViolations(violations, clientViolations, 1);
+        TestUtil.assertCorrectConstraintTypes(violations, clientViolations, NotNull.class);
+    }
+
+    @Ignore("hibernate validator give me only 1 constraintDescriptor for Building.buildingCosts,"
+            + "if i change the message in 1 constraint I get 2 constraint, so hibernate Validator"
+            + " check equals on getConstraintDescriptor")
+    @Test
+    @SpecAssertions({ @SpecAssertion(section = "3.1.2", id = "a"), @SpecAssertion(section = "3.1.2", id = "b") })
+    public void testConstraintAppliedOnFieldAndProperty() {
+        Building building = new Building(10000000);
+
+        Validator validator = TestUtil.getValidatorUnderTest();
+        Set<ConstraintViolation<Building>> violations = validator.validate(building);
+        Set<ClientConstraintViolation> clientViolations = ClientValidationTestHelper.validate(constraintInfo,
+                building);
+        TestUtil.assertCorrectNumberOfViolations(violations, clientViolations, 2);
+        String expectedMessage = "Building costs are max {max} dollars.";
+        TestUtil.assertCorrectConstraintViolationMessages(violations, clientViolations, expectedMessage,
+                expectedMessage);
+    }
+
+    @Ignore("4 constraints apply to private fields which is not visible for serializer")
+    @Test
+    @SpecAssertion(section = "3.1.2", id = "e")
+    public void testFieldAndPropertyVisibilityIsNotConstrained() {
+        Visibility entity = new Visibility();
+
+        Validator validator = TestUtil.getValidatorUnderTest();
+        Set<ConstraintViolation<Visibility>> violations = validator.validate(entity);
+        Set<ClientConstraintViolation> clientViolations = ClientValidationTestHelper.validate(constraintInfo, entity);
+        TestUtil.assertCorrectNumberOfViolations(violations, clientViolations, 6);
+        TestUtil.assertCorrectConstraintTypes(violations, clientViolations, Min.class, Min.class, Min.class,
+                DecimalMin.class, DecimalMin.class, DecimalMin.class);
+        TestUtil.assertCorrectConstraintViolationMessages(violations, clientViolations, "publicField",
+                "protectedField", "privateField", "publicProperty", "protectedProperty", "privateProperty");
+
+        entity.setValues(100);
+        violations = validator.validate(entity);
+        clientViolations = ClientValidationTestHelper.validate(constraintInfo, entity);
+        TestUtil.assertCorrectNumberOfViolations(violations, clientViolations, 0);
+    }
 
     static class StaticFieldsAndProperties {
         @NotNull

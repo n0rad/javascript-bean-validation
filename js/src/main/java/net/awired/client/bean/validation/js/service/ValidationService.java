@@ -39,7 +39,9 @@ public class ValidationService {
         ClientPropertyDescriptor clientDescriptor = new ClientPropertyDescriptor();
         BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass(clazz);
         PropertyDescriptor propertyDescriptor = beanDescriptor.getConstraintsForProperty(property);
-        processConstrainedProperties(clazz, clientDescriptor, propertyDescriptor);
+        if (propertyDescriptor != null) {
+            processConstrainedProperties(clazz, clientDescriptor, propertyDescriptor);
+        }
         return clientDescriptor;
     }
 
@@ -67,6 +69,8 @@ public class ValidationService {
         String propertyName = propertyDescriptor.getPropertyName();
         clientDescriptor.retreaveCreatedProperties().put(propertyName, element);
 
+        Set<ConstraintDescriptor<?>> constraintDescriptors = propertyDescriptor.findConstraints()
+                .unorderedAndMatchingGroups().getConstraintDescriptors();
         for (ConstraintDescriptor<?> constraintDescriptor : propertyDescriptor.getConstraintDescriptors()) {
             ClientConstraintDescriptor constraint = new ClientConstraintDescriptor();
             fillClientConstraintFromServerConstraint(constraint, constraintDescriptor);

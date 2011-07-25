@@ -1,3 +1,13 @@
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
+
+
+
 Validator = function() {
 	var $this = this;
 	this.defaultGroup = "javax.validation.groups.Default";
@@ -91,7 +101,6 @@ Validator = function() {
 						continue;
 					}
 					
-					
 					var valid = $this._constraintValidators[constraint.type](property, constraint.attributes);
 					if (!valid) {
 						var constraintViolation = {};
@@ -117,33 +126,75 @@ Validator = function() {
 	
 	this._constraintValidators = {
 			'javax.validation.constraints.AssertFalse' : function(obj, attributes) {
-				return obj == undefined || false;
+				return obj == undefined || !obj;
 			},
 			'javax.validation.constraints.AssertTrue' : function(obj, attributes) {
-				return obj == undefined || true;
+				return obj == undefined || obj;
 			},
 			'javax.validation.constraints.DecimalMax' : function(obj, attributes) {
+				if (obj == undefined) {
+					return true;
+				}
 
+				if (!isNaN(parseFloat(obj)) && isFinite(obj)) {
+					// number
+					return obj <= attributes.value;
+				} else {
+					return obj.length <= attributes.value;
+				}
 			},
 			'javax.validation.constraints.DecimalMin' : function(obj, attributes) {
-				
+				if (obj == undefined) {
+					return true;
+				}
+
+				if (!isNaN(parseFloat(obj)) && isFinite(obj)) {
+					// number
+					return obj >= attributes.value;
+				} else {
+					return obj.length >= attributes.value;
+				}				
 			},
 			'javax.validation.constraints.Digits' : function(obj, attributes) {
 				if (obj == undefined) {
 					return true;
 				}
-				if (!isNaN(parseFloat(obj)) && isFinite(obj)) {
-					return true;
+				
+				var split = (obj + "").split('.', 2);
+				if (attributes.integer != undefined && split[0].length > attributes.integer) {
+					return false;
 				}
+				if (attributes.fraction != undefined && split[1] && split[1].length > attributes.fraction) {
+					return false;
+				}
+				return true;
 			},
 			'javax.validation.constraints.Future' : function(obj, attributes) {
 				return new Date(obj).getTime() >  new Date().getTime();
 			},
 			'javax.validation.constraints.Max' : function(obj, attributes) {
-				
+				if (obj == undefined) {
+					return true;
+				}
+
+				if (!isNaN(parseFloat(obj)) && isFinite(obj)) {
+					// number
+					return obj <= attributes.value;
+				} else {
+					return obj.length <= attributes.value;
+				}
 			},
 			'javax.validation.constraints.Min' : function(obj, attributes) {
-				
+				if (obj == undefined) {
+					return true;
+				}
+
+				if (!isNaN(parseFloat(obj)) && isFinite(obj)) {
+					// number
+					return obj >= attributes.value;
+				} else {
+					return obj.length >= attributes.value;
+				}				
 			},
 			'javax.validation.constraints.NotNull' : function(obj, attributes) {
 				return obj != undefined;
@@ -165,10 +216,16 @@ Validator = function() {
 				if ( obj == null ) {
 					return true;
 				}
-				var length = obj.length;
+				
+				var length;
+				if (typeof(obj) == 'object') {
+					length = Object.size(obj);					
+				} else {
+					length = obj.length;
+				}
+				
 				return length >= attributes.min && length <= attributes.max;
 			}
 	};
 
 };
-

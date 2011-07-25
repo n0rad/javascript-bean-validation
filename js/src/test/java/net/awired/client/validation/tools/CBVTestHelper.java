@@ -3,6 +3,7 @@ package net.awired.client.validation.tools;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import net.awired.client.bean.validation.js.domain.ClientConstraintViolation;
+import net.awired.client.validation.jsr303.tck.TestUtil;
 
 public class CBVTestHelper {
 
@@ -13,6 +14,6 @@ public class CBVTestHelper {
         Set<ClientConstraintViolation> clientViolations = ClientValidationTestHelper.validateValue(constraintInfo,
                 constraintClass, constraintProperty, value);
 
-        AssertConstraintViolation.assertServerEqualsClient(serverViolations, clientViolations);
+        TestUtil.assertServerEqualsClient(serverViolations, clientViolations);
     }
 }

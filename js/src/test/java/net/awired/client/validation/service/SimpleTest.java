@@ -4,7 +4,7 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.constraints.NotNull;
 import net.awired.client.bean.validation.js.domain.ClientConstraintViolation;
-import net.awired.client.validation.tools.AssertConstraintViolation;
+import net.awired.client.validation.jsr303.tck.TestUtil;
 import net.awired.client.validation.tools.ClientValidationTestHelper;
 import net.awired.client.validation.tools.ServerValidationTestHelper;
 import org.junit.Test;
@@ -21,7 +21,7 @@ public class SimpleTest {
         Set<ClientConstraintViolation> clientViolations = ClientValidationTestHelper.validate(o);
         Set<ConstraintViolation<Object>> serverViolations = ServerValidationTestHelper.validate(o);
 
-        AssertConstraintViolation.assertServerEqualsClient(serverViolations, clientViolations);
+        TestUtil.assertServerEqualsClient(serverViolations, clientViolations);
     }
 
 }

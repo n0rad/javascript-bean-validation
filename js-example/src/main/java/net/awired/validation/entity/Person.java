@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import javax.validation.Payload;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -29,6 +30,7 @@ public class Person {
     private String firstname;
 
     @NotNull(groups = { MinimumValidation.class, Default.class }, payload = Info.class)
+    @Max(10)
     private String lastname;
 
     public enum Gender {
@@ -45,6 +47,7 @@ public class Person {
     @Size(min = 1)
     private List<Address> addresses = new ArrayList<Address>();
 
+    @Valid
     @Size(min = 2)
     private Map<String, Competence> languageSkill = new HashMap<String, Competence>();
     @Size(min = 2)
