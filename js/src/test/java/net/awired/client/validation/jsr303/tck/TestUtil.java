@@ -3,27 +3,98 @@ package net.awired.client.validation.jsr303.tck;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.FileAssert.fail;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import javax.validation.Configuration;
 import javax.validation.ConstraintViolation;
 import javax.validation.Path;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.validation.bootstrap.GenericBootstrap;
+import javax.validation.spi.ValidationProvider;
 import junit.framework.Assert;
 import net.awired.client.bean.validation.js.domain.ClientConstraintViolation;
 import org.hibernate.jsr303.tck.util.TestUtil.PathImpl;
+import org.hibernate.validator.HibernateValidator;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
 public class TestUtil {
-    private static ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+
+    private static String VALIDATION_PROVIDER_TEST_CLASS = "validation.provider";
+
+    private static ValidationProvider<?> validationProviderUnderTest;
+
+    private TestUtil() {
+    }
 
     public static Validator getValidatorUnderTest() {
-        return validatorFactory.getValidator();
+        return getValidatorFactoryUnderTest().getValidator();
     }
+
+    public static ValidationProvider<?> getValidationProviderUnderTest() {
+        if (validationProviderUnderTest == null) {
+            instantiateValidationProviderUnderTest();
+        }
+        return validationProviderUnderTest;
+    }
+
+    public static ValidatorFactory getValidatorFactoryUnderTest() {
+        Configuration<?> config = getConfigurationUnderTest();
+        return config.buildValidatorFactory();
+    }
+
+    public static Configuration<?> getConfigurationUnderTest() {
+        if (validationProviderUnderTest == null) {
+            instantiateValidationProviderUnderTest();
+        }
+
+        GenericBootstrap byDefaultProvider = Validation.byDefaultProvider();
+        //        ProviderSpecificBootstrap<?> bootstrap = Validation.byProvider(validationProviderUnderTest.getClass());
+        return byDefaultProvider.configure();
+    }
+
+    public static InputStream getInputStreamForPath(String path) {
+        // try the context class loader first
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+
+        // try the current class loader
+        if (inputStream == null) {
+            inputStream = TestUtil.class.getResourceAsStream(path);
+        }
+        return inputStream;
+    }
+
+    private static <U extends ValidationProvider<?>> void instantiateValidationProviderUnderTest() {
+        //        String validatorProviderClassName = System.getProperty(VALIDATION_PROVIDER_TEST_CLASS);
+        String validatorProviderClassName = HibernateValidator.class.getName();
+        //        if (validatorProviderClassName == null) {
+        //            throw new RuntimeException(
+        //                    "The test harness must specify the class name of the validation provider under test. Set system property '"
+        //                            + VALIDATION_PROVIDER_TEST_CLASS + "'");
+        //        }
+
+        Class<U> providerClass;
+        try {
+            @SuppressWarnings("unchecked")
+            Class<U> tmpClazz = (Class<U>) TestUtil.class.getClassLoader().loadClass(validatorProviderClassName);
+            providerClass = tmpClazz;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Unable to load " + validatorProviderClassName);
+        }
+
+        try {
+            validationProviderUnderTest = providerClass.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to instantiate " + validatorProviderClassName);
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
 
     public static <T> void assertServerEqualsClient(Set<ConstraintViolation<T>> serverViolations,
             Set<ClientConstraintViolation> clientViolations) {

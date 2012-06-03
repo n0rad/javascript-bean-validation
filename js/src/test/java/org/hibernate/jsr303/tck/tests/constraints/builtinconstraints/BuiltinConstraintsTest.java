@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -400,78 +401,86 @@ public class BuiltinConstraintsTest {
         TestUtil.assertCorrectNumberOfViolations(constraintViolations, clientViolations, 0);
     }
 
-    //
-    //    @Test
-    //    @SpecAssertions({ @SpecAssertion(section = "6", id = "a"), @SpecAssertion(section = "6", id = "m") })
-    //    public void testPastConstraint() {
-    //        Validator validator = TestUtil.getValidatorUnderTest();
-    //        PastDummyEntity dummy = new PastDummyEntity();
-    //
-    //        Set<ConstraintViolation<PastDummyEntity>> constraintViolations = validator.validate(dummy);
-    //        assertCorrectNumberOfViolations(constraintViolations, 0);
-    //
-    //        Calendar cal = GregorianCalendar.getInstance();
-    //        cal.add(Calendar.YEAR, 1);
-    //
-    //        dummy.calendar = cal;
-    //        dummy.date = cal.getTime();
-    //
-    //        constraintViolations = validator.validate(dummy);
-    //        assertCorrectNumberOfViolations(constraintViolations, 2);
-    //        assertCorrectPropertyPaths(constraintViolations, "date", "calendar");
-    //
-    //        cal.add(Calendar.YEAR, -2);
-    //        dummy.calendar = cal;
-    //        dummy.date = cal.getTime();
-    //        constraintViolations = validator.validate(dummy);
-    //        assertCorrectNumberOfViolations(constraintViolations, 0);
-    //    }
-    //
-    //    @Test
-    //    @SpecAssertions({ @SpecAssertion(section = "6", id = "a"), @SpecAssertion(section = "6", id = "n") })
-    //    public void testFutureConstraint() {
-    //        Validator validator = TestUtil.getValidatorUnderTest();
-    //        FutureDummyEntity dummy = new FutureDummyEntity();
-    //
-    //        Set<ConstraintViolation<FutureDummyEntity>> constraintViolations = validator.validate(dummy);
-    //        assertCorrectNumberOfViolations(constraintViolations, 0);
-    //
-    //        Calendar cal = GregorianCalendar.getInstance();
-    //        cal.add(Calendar.YEAR, -1);
-    //
-    //        dummy.calendar = cal;
-    //        dummy.date = cal.getTime();
-    //
-    //        constraintViolations = validator.validate(dummy);
-    //        assertCorrectNumberOfViolations(constraintViolations, 2);
-    //        assertCorrectPropertyPaths(constraintViolations, "date", "calendar");
-    //
-    //        cal.add(Calendar.YEAR, 2);
-    //        dummy.calendar = cal;
-    //        dummy.date = cal.getTime();
-    //        constraintViolations = validator.validate(dummy);
-    //        assertCorrectNumberOfViolations(constraintViolations, 0);
-    //    }
-    //
-    //    @Test
-    //    @SpecAssertions({ @SpecAssertion(section = "6", id = "a"), @SpecAssertion(section = "6", id = "o") })
-    //    public void testPatternConstraint() {
-    //        Validator validator = TestUtil.getValidatorUnderTest();
-    //        PatternDummyEntity dummy = new PatternDummyEntity();
-    //
-    //        Set<ConstraintViolation<PatternDummyEntity>> constraintViolations = validator.validate(dummy);
-    //        assertCorrectNumberOfViolations(constraintViolations, 0);
-    //
-    //        dummy.pattern = "ab cd";
-    //        constraintViolations = validator.validate(dummy);
-    //        assertCorrectNumberOfViolations(constraintViolations, 1);
-    //        assertConstraintViolation(constraintViolations.iterator().next(), PatternDummyEntity.class, "ab cd",
-    //                "pattern");
-    //
-    //        dummy.pattern = "wc 00";
-    //        constraintViolations = validator.validate(dummy);
-    //        assertCorrectNumberOfViolations(constraintViolations, 0);
-    //    }
+    @Test
+    @SpecAssertions({ @SpecAssertion(section = "6", id = "a"), @SpecAssertion(section = "6", id = "m") })
+    public void testPastConstraint() {
+        Validator validator = TestUtil.getValidatorUnderTest();
+        PastDummyEntity dummy = new PastDummyEntity();
+
+        Set<ConstraintViolation<PastDummyEntity>> constraintViolations = validator.validate(dummy);
+        Set<ClientConstraintViolation> clientViolations = ClientValidationTestHelper.validate(dummy);
+        TestUtil.assertCorrectNumberOfViolations(constraintViolations, clientViolations, 0);
+
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.add(Calendar.YEAR, 1);
+
+        dummy.calendar = cal;
+        dummy.date = cal.getTime();
+
+        constraintViolations = validator.validate(dummy);
+        clientViolations = ClientValidationTestHelper.validate(dummy);
+        TestUtil.assertCorrectNumberOfViolations(constraintViolations, clientViolations, 2);
+        TestUtil.assertCorrectPropertyPaths(constraintViolations, clientViolations, "date", "calendar");
+
+        cal.add(Calendar.YEAR, -2);
+        dummy.calendar = cal;
+        dummy.date = cal.getTime();
+        constraintViolations = validator.validate(dummy);
+        clientViolations = ClientValidationTestHelper.validate(dummy);
+        TestUtil.assertCorrectNumberOfViolations(constraintViolations, clientViolations, 0);
+    }
+
+    @Test
+    @SpecAssertions({ @SpecAssertion(section = "6", id = "a"), @SpecAssertion(section = "6", id = "n") })
+    public void testFutureConstraint() {
+        Validator validator = TestUtil.getValidatorUnderTest();
+        FutureDummyEntity dummy = new FutureDummyEntity();
+
+        Set<ConstraintViolation<FutureDummyEntity>> constraintViolations = validator.validate(dummy);
+        Set<ClientConstraintViolation> clientViolations = ClientValidationTestHelper.validate(dummy);
+        TestUtil.assertCorrectNumberOfViolations(constraintViolations, clientViolations, 0);
+
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.add(Calendar.YEAR, -1);
+
+        dummy.calendar = cal;
+        dummy.date = cal.getTime();
+
+        constraintViolations = validator.validate(dummy);
+        clientViolations = ClientValidationTestHelper.validate(dummy);
+        TestUtil.assertCorrectNumberOfViolations(constraintViolations, clientViolations, 2);
+        TestUtil.assertCorrectPropertyPaths(constraintViolations, clientViolations, "date", "calendar");
+
+        cal.add(Calendar.YEAR, 2);
+        dummy.calendar = cal;
+        dummy.date = cal.getTime();
+        constraintViolations = validator.validate(dummy);
+        clientViolations = ClientValidationTestHelper.validate(dummy);
+        TestUtil.assertCorrectNumberOfViolations(constraintViolations, clientViolations, 0);
+    }
+
+    @Test
+    @SpecAssertions({ @SpecAssertion(section = "6", id = "a"), @SpecAssertion(section = "6", id = "o") })
+    public void testPatternConstraint() {
+        Validator validator = TestUtil.getValidatorUnderTest();
+        PatternDummyEntity dummy = new PatternDummyEntity();
+
+        Set<ConstraintViolation<PatternDummyEntity>> constraintViolations = validator.validate(dummy);
+        Set<ClientConstraintViolation> clientViolations = ClientValidationTestHelper.validate(dummy);
+        TestUtil.assertCorrectNumberOfViolations(constraintViolations, clientViolations, 0);
+
+        dummy.pattern = "ab cd";
+        constraintViolations = validator.validate(dummy);
+        clientViolations = ClientValidationTestHelper.validate(dummy);
+        TestUtil.assertCorrectNumberOfViolations(constraintViolations, clientViolations, 1);
+        TestUtil.assertConstraintViolation(constraintViolations.iterator().next(),
+                clientViolations.iterator().next(), PatternDummyEntity.class, "ab cd", "pattern");
+
+        dummy.pattern = "wc 00";
+        constraintViolations = validator.validate(dummy);
+        clientViolations = ClientValidationTestHelper.validate(dummy);
+        TestUtil.assertCorrectNumberOfViolations(constraintViolations, clientViolations, 0);
+    }
 
     class NullDummyEntity {
         @Null

@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>net.awired.ajsl</groupId>
 			<artifactId>ajsl-core</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.validation</groupId>

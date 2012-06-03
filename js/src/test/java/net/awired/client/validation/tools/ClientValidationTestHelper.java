@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import javax.validation.ValidatorFactory;
 import net.awired.client.bean.validation.js.domain.ClientConstraintViolation;
 import net.awired.client.bean.validation.js.service.ValidationService;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -17,8 +18,14 @@ import com.google.common.io.CharStreams;
 
 public class ClientValidationTestHelper {
 
+    private static ValidationService validationService = new ValidationService();
+
     private static Context cx;
     private static Scriptable scope;
+
+    public static void buildValidationService(ValidatorFactory validatorFactory) {
+        validationService = new ValidationService(validatorFactory);
+    }
 
     static {
         try {
@@ -91,7 +98,6 @@ public class ClientValidationTestHelper {
             Scenario<T> scenario, Class<?>... groups) {
         Preconditions.checkNotNull(info);
         ObjectMapper mapper = new ObjectMapper();
-        ValidationService validationService = new ValidationService();
         try {
             StringBuilder jsScript = new StringBuilder();
             jsScript.append("validator = new Validator();").append("\n");

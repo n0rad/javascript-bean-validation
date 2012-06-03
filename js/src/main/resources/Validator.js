@@ -170,6 +170,9 @@ Validator = function() {
 				return true;
 			},
 			'javax.validation.constraints.Future' : function(obj, attributes) {
+				if (obj == undefined) {
+					return true;
+				}
 				return new Date(obj).getTime() >  new Date().getTime();
 			},
 			'javax.validation.constraints.Max' : function(obj, attributes) {
@@ -203,6 +206,9 @@ Validator = function() {
 				return obj == undefined;
 			},
 			'javax.validation.constraints.Past' : function(obj, attributes) {
+				if (obj == undefined) {
+					return true;
+				}
 				return new Date(obj).getTime() <  new Date().getTime();				
 			},
 			'javax.validation.constraints.Pattern' : function(obj, attributes) {

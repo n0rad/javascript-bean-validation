@@ -21,9 +21,10 @@
 	<parent>
 		<groupId>net.awired.parent.parent-java</groupId>
 		<artifactId>parent-java</artifactId>
-		<version>1.11</version>
+		<version>1.13</version>
 	</parent>
-
+	
+	
 	<modules>
 		<module>js</module>
 		<module>js-example</module>
@@ -45,31 +46,10 @@
 		</dependencies>
 	</dependencyManagement>
 
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-			<comments />
-		</license>
-	</licenses>
-
 	<issueManagement>
 		<system>github</system>
 		<url>https://github.com/awired/client-bean-validation/issues</url>
 	</issueManagement>
-	<developers>
-		<developer>
-			<id>jsmadja</id>
-			<name>Julien Smadja</name>
-			<email>julien dot smadja at gmail dot com</email>
-		</developer>
-		<developer>
-			<id>n0rad</id>
-			<name>Arnaud Lemaire</name>
-			<email>dev at norad dot fr</email>
-		</developer>
-	</developers>
 
 	<scm>
 		<connection>scm:git:git://github.com/awired/client-bean-validation.git</connection>
@@ -130,30 +110,6 @@
 		</plugins>
 	</build>
 
-
-	<!-- distribution -->
-	<distributionManagement>
-		<site>
-			<id>awired-web</id>
-			<name>awired web deployment</name>
-			<url>dav:http://projs.awired.net/client-bean-validation</url>
-		</site>
-	</distributionManagement>
-
-	<!-- plugin repos -->
-	<pluginRepositories>
-		<pluginRepository>
-			<id>maven2-repository.java.net</id>
-			<name>Java.net Repository for Maven</name>
-			<url>http://download.java.net/maven/2/</url>
-		</pluginRepository>
-		<pluginRepository>
-			<id>awired</id>
-			<name>Awired public</name>
-			<url>http://mvn.awired.net/nexus/content/groups/public/</url>
-		</pluginRepository>
-	</pluginRepositories>
-
 	<!-- dependencies repos -->
 	<repositories>
 		<repository>
@@ -170,11 +126,6 @@
 			<id>maven2-repository.java.net</id>
 			<name>Java.net Repository for Maven</name>
 			<url>http://download.java.net/maven/2/</url>
-		</repository>
-		<repository>
-			<id>awired</id>
-			<name>Awired public</name>
-			<url>http://mvn.awired.net/nexus/content/groups/public/</url>
 		</repository>
 	</repositories>
 </project>
