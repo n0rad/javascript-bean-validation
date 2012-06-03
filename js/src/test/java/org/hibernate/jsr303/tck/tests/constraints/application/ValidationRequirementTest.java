@@ -1,8 +1,9 @@
 package org.hibernate.jsr303.tck.tests.constraints.application;
 
 import org.jboss.testharness.AbstractTest;
+import org.junit.Ignore;
 
-@ignore
+@Ignore
 public class ValidationRequirementTest extends AbstractTest {
 
     //    ClientConstraintInfo constraintInfo = new ClientConstraintInfo(new InputStreamReader(getClass()
