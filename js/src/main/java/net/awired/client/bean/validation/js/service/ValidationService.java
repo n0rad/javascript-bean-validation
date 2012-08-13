@@ -5,6 +5,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.validation.Validation;
@@ -15,11 +16,13 @@ import javax.validation.metadata.PropertyDescriptor;
 import net.awired.ajsl.core.lang.reflect.ReflectTool;
 import net.awired.client.bean.validation.js.domain.ClientConstraintDescriptor;
 import net.awired.client.bean.validation.js.domain.ClientPropertyDescriptor;
+import net.awired.client.bean.validation.js.domain.ClientValidatorInfo;
 import net.awired.client.bean.validation.js.domain.PropertyType;
 
 public class ValidationService {
 
-    ValidatorFactory validatorFactory;
+    private ValidatorFactory validatorFactory;
+    private EmptyInterpolatorContext emptyContext = new EmptyInterpolatorContext();
 
     public ValidationService() {
         this.validatorFactory = Validation.buildDefaultValidatorFactory();
@@ -29,13 +32,27 @@ public class ValidationService {
         this.validatorFactory = validatorFactory;
     }
 
-    public Object getValidationObject(Class<?> clazz) {
+    public ClientPropertyDescriptor getValidationObject(Class<?> clazz) {
         ClientPropertyDescriptor e = new ClientPropertyDescriptor();
         fillValidationObject(clazz, e);
         return e;
     }
 
-    public Object getValidationObject(Class<?> clazz, String property) {
+    public ClientValidatorInfo getValidatorInfo(Class<?> clazz, Locale locale) {
+        ClientValidatorInfo info = new ClientValidatorInfo();
+        info.setProperties(getValidationObject(clazz));
+        info.setMessages(getMessages(info.getProperties(), locale));
+        return info;
+    }
+
+    public ClientValidatorInfo getValidatorInfo(Class<?> clazz) {
+        ClientValidatorInfo info = new ClientValidatorInfo();
+        info.setProperties(getValidationObject(clazz));
+        info.setMessages(getMessages(info.getProperties(), Locale.getDefault()));
+        return info;
+    }
+
+    public ClientPropertyDescriptor getValidationObject(Class<?> clazz, String property) {
         ClientPropertyDescriptor clientDescriptor = new ClientPropertyDescriptor();
         BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass(clazz);
         PropertyDescriptor propertyDescriptor = beanDescriptor.getConstraintsForProperty(property);
@@ -45,7 +62,40 @@ public class ValidationService {
         return clientDescriptor;
     }
 
+    public Map<String, String> getMessages(ClientPropertyDescriptor clientDescriptor, Locale locale) {
+        HashMap<String, String> res = new HashMap<String, String>();
+        findMessagesRec(res, clientDescriptor, locale);
+        return res;
+    }
+
+    public Map<String, String> getMessages(ClientPropertyDescriptor clientDescriptor) {
+        HashMap<String, String> res = new HashMap<String, String>();
+        findMessagesRec(res, clientDescriptor, Locale.getDefault());
+        return res;
+    }
+
     ///////////////////////////////////////////////////////////////////////////
+
+    private void findMessagesRec(HashMap<String, String> res, ClientPropertyDescriptor clientDescriptor, Locale locale) {
+        if (clientDescriptor == null) {
+            return;
+        }
+        if (clientDescriptor.getConstraints() != null) {
+            for (ClientConstraintDescriptor constraint : clientDescriptor.getConstraints()) {
+                if (!res.containsKey(constraint.getType())) {
+                    String message = constraint.getAttributes().get("message").toString();
+                    String interpolation = validatorFactory.getMessageInterpolator().interpolate(message,
+                            emptyContext, locale);
+                    res.put(message, interpolation);
+                }
+            }
+        }
+        if (clientDescriptor.getProperties() != null) {
+            for (ClientPropertyDescriptor property : clientDescriptor.getProperties().values()) {
+                findMessagesRec(res, property, locale);
+            }
+        }
+    }
 
     private void fillValidationObject(Class<?> clazz, ClientPropertyDescriptor clientDescriptor) {
         BeanDescriptor beanDescriptor = validatorFactory.getValidator().getConstraintsForClass(clazz);

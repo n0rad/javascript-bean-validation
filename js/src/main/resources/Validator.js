@@ -6,7 +6,15 @@ Object.size = function(obj) {
     return size;
 };
 
-
+Object.clone = function(obj) {
+	  var newObj = (obj instanceof Array) ? [] : {};
+	  for (i in obj) {
+	    if (i == 'clone') continue;
+	    if (obj[i] && typeof obj[i] == "object") {
+	      newObj[i] = obj[i].clone();
+	    } else newObj[i] = obj[i]
+	  } return newObj;
+	};
 
 Validator = function() {
 	var $this = this;
@@ -48,6 +56,26 @@ Validator = function() {
 		return currentPropDesc;
 	};
 	
+	this.interpolate = function(validatorInfo, violation) {
+		var prop = Object.clone(violation.clientConstraintDescriptor.attributes);
+		var msg = violation.clientConstraintDescriptor.attributes['message'];
+		prop[msg.substring(1, msg.length - 1)] = validatorInfo.messages[msg];
+		
+		var res = violation.messageTemplate;
+
+		var replaced = true;
+		while (replaced) {
+			var tmp = res;
+			for (var val in prop) {
+			    res = res.replace(new RegExp('{' + val + '}', 'g'), prop[val]);
+			}
+			if (tmp == res) {
+				replaced = false;
+			}
+		}
+		return res;
+	};
+	
 	/////////////////////////////////////////////////////////////
 	
 	this._validateRec = function(groups, violation, property, propertyDescriptor, rootProperty, previousProperty, path) {
@@ -58,7 +86,13 @@ Validator = function() {
 	};
 	
 	this._validatePropertyRec = function(groups, violation, property, propertyDescriptor, rootProperty, previousProperty, path, key) {
+		if (propertyDescriptor == null) {
+			return;
+		}
 		var ePropertyDescriptor = propertyDescriptor.properties[key];
+		if (ePropertyDescriptor == null) {
+			return; // this property is not in the description tree
+		}
 		var eproperty = property ? property[key] : undefined;
 		var epath = path ? path + '.' + key : key;
 		if (ePropertyDescriptor.type == 'array') {
@@ -75,7 +109,7 @@ Validator = function() {
 	}
 	
 	this._validateConstraints = function(groups, violation, property, propertyDescriptor, rootProperty, previousProperty, path) {
-		if (!propertyDescriptor.constraints) {
+		if (!propertyDescriptor || !propertyDescriptor.constraints) {
 			return;
 		}
 		
@@ -100,21 +134,44 @@ Validator = function() {
 					if (!groupMatch) {
 						continue;
 					}
-					
-					var valid = $this._constraintValidators[constraint.type](property, constraint.attributes);
-					if (!valid) {
-						var constraintViolation = {};
-						constraintViolation['invalidValue'] = property;
-						constraintViolation['clientConstraintDescriptor'] = constraint;
-						constraintViolation['leafProperty'] = previousProperty;
-						constraintViolation['message'] = "";
-						constraintViolation['messageTemplate'] = constraint.attributes.message;
-						constraintViolation['rootProperty'] = rootProperty;
-						constraintViolation['propertyPath'] = path;
-						
-						violation.push(constraintViolation);
-						done.push(constraint.type);
+
+					var errorAsSingle = false;
+					if (constraint.composingConstraints) {
+						for (var j = 0; j < constraint.composingConstraints.length; j++) {
+							var current = constraint.composingConstraints[j]
+							var valid = $this._constraintValidators[current.type](property, current.attributes);
+							if (!valid) {
+								if (constraint.reportAsSingle) {
+									errorAsSingle = true;
+									break;
+								}
+								var cv = {};
+								cv['invalidValue'] = property;
+								cv['clientConstraintDescriptor'] = current;
+								cv['leafProperty'] = previousProperty;
+//								cv['message'] = "";
+								cv['messageTemplate'] = current.attributes.message;
+								cv['rootProperty'] = rootProperty;
+								cv['propertyPath'] = path;								
+								violation.push(cv);								
+							}
+							done.push(constraint.type);
+						}
 					}
+					var valid = $this._constraintValidators[constraint.type](property, constraint.attributes);
+					if (!valid || errorAsSingle) {
+						var cv = {};
+						cv['invalidValue'] = property;
+						cv['clientConstraintDescriptor'] = constraint;
+						cv['leafProperty'] = previousProperty;
+//						cv['message'] = "";
+						cv['messageTemplate'] = constraint.attributes.message;
+						cv['rootProperty'] = rootProperty;
+						cv['propertyPath'] = path;
+						
+						violation.push(cv);
+					}
+					done.push(constraint.type);
 				}
 			} else {
 				//TODO manage it
@@ -122,7 +179,6 @@ Validator = function() {
 			}
 		}		
 	};
-	
 	
 	this._constraintValidators = {
 			'javax.validation.constraints.AssertFalse' : function(obj, attributes) {

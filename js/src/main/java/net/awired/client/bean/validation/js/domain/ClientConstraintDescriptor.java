@@ -3,8 +3,10 @@ package net.awired.client.bean.validation.js.domain;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
-//@JsonSerialize(include = Inclusion.NON_NULL)
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ClientConstraintDescriptor {
     private String type;
     private Map<String, Object> attributes;

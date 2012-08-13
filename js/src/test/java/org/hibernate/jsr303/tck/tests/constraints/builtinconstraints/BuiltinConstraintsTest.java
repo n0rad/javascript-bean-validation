@@ -411,7 +411,7 @@ public class BuiltinConstraintsTest {
         Set<ClientConstraintViolation> clientViolations = ClientValidationTestHelper.validate(dummy);
         TestUtil.assertCorrectNumberOfViolations(constraintViolations, clientViolations, 0);
 
-        Calendar cal = GregorianCalendar.getInstance();
+        Calendar cal = Calendar.getInstance();
         cal.add(Calendar.YEAR, 1);
 
         dummy.calendar = cal;
