@@ -95,7 +95,7 @@ Validator = function() {
 		}
 		var eproperty = property ? property[key] : undefined;
 		var epath = path ? path + '.' + key : key;
-		if (ePropertyDescriptor.type == 'array') {
+		if (ePropertyDescriptor.propertyType == 'ARRAY') {
 			if ($.isArray(eproperty)) {
 				for (var i = 0; i < eproperty.length; i++) {
 					var leproperty = eproperty[i];

@@ -15,6 +15,9 @@ public class EnumNotEmptyValidator implements ConstraintValidator<EnumNotEmpty, 
 
     @Override
     public boolean isValid(Enum<?> object, ConstraintValidatorContext constraintValidatorContext) {
+        if (object == null) {
+            return false;
+        }
         return object.name().length() > 0;
     }
 

@@ -116,7 +116,7 @@ public class TestUtil {
                                 return true;
                             }
                             return false;
-                        };
+                        }
                     });
 
             Assert.assertNotNull("client violation not found for " + serverPath + " : " + serverConstraintClassName,

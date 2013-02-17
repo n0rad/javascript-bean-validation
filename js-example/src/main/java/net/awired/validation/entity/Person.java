@@ -16,10 +16,10 @@ import net.awired.validation.MyNotEmpty;
 public class Person {
 
     public static class Info implements Payload {
-    };
+    }
 
     public static class Error implements Payload {
-    };
+    }
 
     public interface MinimumValidation {
     }

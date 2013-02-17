@@ -11,7 +11,7 @@ public class RhinoContextClasses {
 
     public static class SandboxWrapFactory extends WrapFactory {
         @Override
-        public Scriptable wrapAsJavaObject(Context cx, Scriptable scope, Object javaObject, Class staticType) {
+        public Scriptable wrapAsJavaObject(Context cx, Scriptable scope, Object javaObject, Class<?> staticType) {
             return new SandboxNativeJavaObject(scope, javaObject, staticType);
         }
     }
@@ -26,7 +26,7 @@ public class RhinoContextClasses {
     }
 
     public static class SandboxNativeJavaObject extends NativeJavaObject {
-        public SandboxNativeJavaObject(Scriptable scope, Object javaObject, Class staticType) {
+        public SandboxNativeJavaObject(Scriptable scope, Object javaObject, Class<?> staticType) {
             super(scope, javaObject, staticType);
         }
 
