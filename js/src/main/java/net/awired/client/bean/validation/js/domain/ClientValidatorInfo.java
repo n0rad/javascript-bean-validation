@@ -1,7 +1,12 @@
 package net.awired.client.bean.validation.js.domain;
 
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ClientValidatorInfo {
 
     private ClientPropertyDescriptor properties;
