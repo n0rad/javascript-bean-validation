@@ -2,24 +2,22 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>net.awired.client-bean-validation</groupId>
-	<artifactId>cbv</artifactId>
+	<groupId>net.awired.javascript.bean.validation</groupId>
+	<artifactId>javascript-bean-validation</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>Client Bean Validation</name>
-	<description>JSR303 clients implementation / tools</description>
+	<name>Javascript Bean Validation</name>
+	<description>Tools to validate Javascript object from server side Bean Validation annotations</description>
 
 	<parent>
-		<groupId>net.awired.parent.parent-java</groupId>
+		<groupId>net.awired.parent</groupId>
 		<artifactId>parent-java</artifactId>
-		<version>1.13</version>
+		<version>1.16</version>
 	</parent>
-	
 	
 	<modules>
 		<module>js</module>
 		<module>js-example</module>
-		<!-- <module>xsd</module> -->
 	</modules>
 
 	<properties>
@@ -30,8 +28,8 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>net.awired.client-bean-validation</groupId>
-				<artifactId>cbv-js</artifactId>
+                <groupId>net.awired.javascript.bean.validation</groupId>
+				<artifactId>javascript-bean-validation-js</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>

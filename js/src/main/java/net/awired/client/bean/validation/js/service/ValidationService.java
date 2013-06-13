@@ -1,3 +1,19 @@
+/**
+ *
+ *     Copyright (C) Awired.net
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *             http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ */
 package net.awired.client.bean.validation.js.service;
 
 import java.lang.reflect.Field;
@@ -13,11 +29,11 @@ import javax.validation.ValidatorFactory;
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ConstraintDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
-import net.awired.ajsl.core.lang.reflect.ReflectTool;
 import net.awired.client.bean.validation.js.domain.ClientConstraintDescriptor;
 import net.awired.client.bean.validation.js.domain.ClientPropertyDescriptor;
 import net.awired.client.bean.validation.js.domain.ClientValidatorInfo;
 import net.awired.client.bean.validation.js.domain.PropertyType;
+import net.awired.core.lang.reflect.ReflectTools;
 
 public class ValidationService {
 
@@ -129,7 +145,7 @@ public class ValidationService {
 
         if (propertyDescriptor.isCascaded()) {
             Class<?> elementClass = propertyDescriptor.getElementClass();
-            if (ReflectTool.classImplement(elementClass, List.class)) {
+            if (ReflectTools.classImplement(elementClass, List.class)) {
                 try {
                     Field field = clazz.getDeclaredField(propertyName);
                     ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
@@ -143,7 +159,7 @@ public class ValidationService {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
-            } else if (ReflectTool.classImplement(elementClass, Map.class)) {
+            } else if (ReflectTools.classImplement(elementClass, Map.class)) {
                 //TODO MAP
                 //TODO SET
             } else if (elementClass != String.class) {

@@ -3,22 +3,21 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>cbv-js</artifactId>
-	<name>Client Bean Validation - JS</name>
+	<artifactId>javascript-bean-validation-js</artifactId>
+	<name>Javascript bean validation - JS</name>
 	<packaging>jar</packaging>
 
 	<parent>
-		<groupId>net.awired.client-bean-validation</groupId>
-		<artifactId>cbv</artifactId>
+		<groupId>net.awired.javascript.bean.validation</groupId>
+		<artifactId>javascript-bean-validation</artifactId>
 		<version>0.1-SNAPSHOT</version>
 		<relativePath>../</relativePath>
 	</parent>
 
 	<dependencies>
-
 		<dependency>
-			<groupId>net.awired.ajsl</groupId>
-			<artifactId>ajsl-core</artifactId>
+			<groupId>net.awired.core</groupId>
+			<artifactId>core</artifactId>
 			<version>0.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
