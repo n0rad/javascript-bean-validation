@@ -4,7 +4,7 @@
 
     <servlet>
         <servlet-name>MyServlet</servlet-name>
-        <servlet-class>net.awired.validation.MainServlet</servlet-class>
+        <servlet-class>fr.norad.validation.MainServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>MyServlet</servlet-name>
@@ -13,7 +13,7 @@
 
     <servlet>
         <servlet-name>Validator</servlet-name>
-        <servlet-class>net.awired.validation.ValidatorServlet</servlet-class>
+        <servlet-class>fr.norad.validation.ValidatorServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Validator</servlet-name>

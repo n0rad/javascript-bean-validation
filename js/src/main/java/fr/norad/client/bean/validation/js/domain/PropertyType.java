@@ -1,4 +1,4 @@
-/*
+/**
  *
  *     Copyright (C) norad.fr
  *
@@ -14,14 +14,8 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-SecurityCheck = function(obj, attributes) {
-	if (obj == null) {
-		return true;
-	}
-	
-	if (obj.personalNumber == undefined) {
-		return false;
-	}
-	
-	return "000000-0000" != obj.personalNumber;
+package fr.norad.client.bean.validation.js.domain;
+
+public enum PropertyType {
+    ELEMENT, ARRAY, MAP;
 }

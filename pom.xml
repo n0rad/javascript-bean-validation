@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>net.awired.javascript.bean.validation</groupId>
+	<groupId>fr.norad.javascript.bean.validation</groupId>
 	<artifactId>javascript-bean-validation</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -10,9 +10,9 @@
 	<description>Tools to validate Javascript object from server side Bean Validation annotations</description>
 
 	<parent>
-		<groupId>net.awired.parent</groupId>
+		<groupId>fr.norad.parent</groupId>
 		<artifactId>parent-java</artifactId>
-		<version>1.16</version>
+		<version>1.18</version>
 	</parent>
 	
 	<modules>
@@ -28,7 +28,7 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-                <groupId>net.awired.javascript.bean.validation</groupId>
+                <groupId>fr.norad.javascript.bean.validation</groupId>
 				<artifactId>javascript-bean-validation-js</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -37,13 +37,13 @@
 
 	<issueManagement>
 		<system>github</system>
-		<url>https://github.com/awired/client-bean-validation/issues</url>
+		<url>https://github.com/n0rad/client-bean-validation/issues</url>
 	</issueManagement>
 
 	<scm>
-		<connection>scm:git:git://github.com/awired/client-bean-validation.git</connection>
-		<developerConnection>scm:git:git@github.com:awired/client-bean-validation.git</developerConnection>
-		<url>http://github.com/awired/client-bean-validation</url>
+		<connection>scm:git:git://github.com/n0rad/javascript-bean-validation.git</connection>
+		<developerConnection>scm:git:git@github.com:n0rad/javascript-bean-validation.git</developerConnection>
+		<url>http://github.com/n0rad/client-bean-validation</url>
 	</scm>
 
 	<build>

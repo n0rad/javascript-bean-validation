@@ -1,4 +1,4 @@
-/*
+/**
  *
  *     Copyright (C) norad.fr
  *
@@ -14,14 +14,21 @@
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
  */
-SecurityCheck = function(obj, attributes) {
-	if (obj == null) {
-		return true;
-	}
-	
-	if (obj.personalNumber == undefined) {
-		return false;
-	}
-	
-	return "000000-0000" != obj.personalNumber;
+package fr.norad.validation;
+
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+
+public class FrenchZipcodeValidator implements ConstraintValidator<FrenchZipcode, String> {
+
+    @Override
+    public void initialize(FrenchZipcode constraintAnnotation) {
+
+    }
+
+    @Override
+    public boolean isValid(String value, ConstraintValidatorContext context) {
+        return false;
+    }
+
 }

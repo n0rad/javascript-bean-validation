@@ -1,6 +1,6 @@
 /**
  *
- *     Copyright (C) Awired.net
+ *     Copyright (C) norad.fr
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
@@ -41,12 +41,12 @@ import javax.validation.constraints.Null;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import net.awired.client.bean.validation.js.domain.ClientConstraintViolation;
-import net.awired.client.validation.jsr303.tck.TestUtil;
-import net.awired.client.validation.tools.ClientValidationTestHelper;
 import org.jboss.test.audit.annotations.SpecAssertion;
 import org.jboss.test.audit.annotations.SpecAssertions;
 import org.junit.Test;
+import fr.norad.client.bean.validation.js.domain.ClientConstraintViolation;
+import fr.norad.client.validation.jsr303.tck.TestUtil;
+import fr.norad.client.validation.tools.ClientValidationTestHelper;
 
 public class BuiltinConstraintsTest {
 

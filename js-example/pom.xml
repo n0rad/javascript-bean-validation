@@ -7,7 +7,7 @@
 	<packaging>war</packaging>
 
 	<parent>
-		<groupId>net.awired.javascript.bean.validation</groupId>
+		<groupId>fr.norad.javascript.bean.validation</groupId>
 		<artifactId>javascript-bean-validation</artifactId>
 		<version>0.1-SNAPSHOT</version>
 		<relativePath>../</relativePath>
@@ -15,7 +15,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>net.awired.javascript.bean.validation</groupId>
+			<groupId>fr.norad.javascript.bean.validation</groupId>
 			<artifactId>javascript-bean-validation-js</artifactId>
 		</dependency>
 

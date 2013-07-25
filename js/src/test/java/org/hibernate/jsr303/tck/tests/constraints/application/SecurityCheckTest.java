@@ -1,6 +1,6 @@
 /**
  *
- *     Copyright (C) Awired.net
+ *     Copyright (C) norad.fr
  *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 package org.hibernate.jsr303.tck.tests.constraints.application;
 
 import java.io.InputStreamReader;
-import net.awired.client.validation.tools.CBVTestHelper;
-import net.awired.client.validation.tools.ClientConstraintInfo;
 import org.junit.Test;
+import fr.norad.client.validation.tools.CBVTestHelper;
+import fr.norad.client.validation.tools.ClientConstraintInfo;
 
 public class SecurityCheckTest {
 

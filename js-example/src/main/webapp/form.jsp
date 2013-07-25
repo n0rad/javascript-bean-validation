@@ -39,7 +39,7 @@ cv = validator.validate(JSON.parse('{"calendar":null,"date":null}'), JSON.parse(
             return $.trim(obj).length > 0;
 		};
 		
-		validator.registerConstraint("net.awired.validation.MyNotEmpty", MyNotEmpty);
+		validator.registerConstraint("fr.norad.validation.MyNotEmpty", MyNotEmpty);
 
 		var inlineValidate = function(e) {
 			var f = myform;
